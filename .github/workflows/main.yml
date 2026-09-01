@@ -1,0 +1,34 @@
+name: Auto Update EWS
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' 
+  workflow_dispatch: 
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tarik kode dari repository
+        uses: actions/checkout@v3
+
+      - name: Siapkan Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instal Library
+        run: pip install -r requirements.txt
+
+      - name: Jalankan Skrip Unduh & Proses
+        env:
+          TZ: Asia/Jakarta  # <--- (BARU) Memaksa server menggunakan waktu WIB
+        run: python proses_himawari_dan_log_cb.py # <--- CEK BARIS INI
+
+      - name: Simpan Data Baru ke GitHub
+        run: |
+          git config --global user.name 'Robot EWS'
+          git config --global user.email 'robot@bmkg.go.id'
+          git add .
+          git commit -m "Auto-update data EWS" || echo "Tidak ada perubahan"
+          git push
