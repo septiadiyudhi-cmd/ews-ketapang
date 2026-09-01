@@ -1,0 +1,9 @@
+streamlit
+pandas
+plotly
+streamlit-autorefresh
+reportlab
+Pillow
+cartopy
+matplotlib
+numpy
