@@ -3,8 +3,8 @@
 AUTO DOWNLOAD + PROCESS + LOG STATUS CB (Satelit + Radar)
 HIMAWARI-9 B13 & SIDARMA CMAX - EWS Penyeberangan Ketapang-Gilimanuk
 
-Versi Multi-Sensor (Isolasi Penuh):
-- Download FTP Satelit
+Versi Multi-Sensor (Isolasi Penuh - GITHUB ACTIONS VERSION):
+- Download FTP Satelit (Dengan Passive Mode)
 - Download API Radar Cuaca
 - Proses .nc (Satelit) & .png (Radar) di proses terpisah (baca_data.py)
 - Plot gambar .npz (plot_dari_npz.py)
@@ -16,7 +16,6 @@ from datetime import datetime, timedelta
 import os
 import re
 import sys
-import time
 import subprocess
 
 # =============================================================
@@ -39,11 +38,10 @@ BAND = "B13"
 POLA_TIMESTAMP = re.compile(r"(\d{12})\.nc$", re.IGNORECASE)
 
 # =============================================================
-# KONFIGURASI WAKTU
+# KONFIGURASI TIMEOUT
 # =============================================================
-INTERVAL_MENIT = 10
-DELAY_SETELAH_MENIT_BULAT = 90
 TIMEOUT_PROSES_SATU_LANGKAH = 180  # detik
+TIMEOUT_AMBIL_ANGIN = 30  # detik
 
 # =============================================================
 # LOKASI SCRIPT PENDUKUNG (harus ada di folder yang sama)
@@ -52,10 +50,9 @@ FOLDER_SCRIPT_INI = os.path.dirname(os.path.abspath(__file__))
 SCRIPT_BACA_DATA = os.path.join(FOLDER_SCRIPT_INI, "baca_data.py")
 SCRIPT_PLOT = os.path.join(FOLDER_SCRIPT_INI, "plot_dari_npz.py")
 SCRIPT_AMBIL_ANGIN = os.path.join(FOLDER_SCRIPT_INI, "ambil_angin_aws.py")
-SCRIPT_UNDUH_RADAR = os.path.join(FOLDER_SCRIPT_INI, "unduh_radar_api.py") # <-- Tambahan Radar
-SCRIPT_PLOT_RADAR = os.path.join(FOLDER_SCRIPT_INI, "plot_radar_saja.py") # <--- TAMBAHKAN INI
+SCRIPT_UNDUH_RADAR = os.path.join(FOLDER_SCRIPT_INI, "unduh_radar_api.py")
+SCRIPT_PLOT_RADAR = os.path.join(FOLDER_SCRIPT_INI, "plot_radar_saja.py") 
 
-TIMEOUT_AMBIL_ANGIN = 30  # detik
 PYTHON_EXE = sys.executable
 
 # =============================================================
@@ -136,7 +133,8 @@ def auto_ftp_download():
     ftp = FTP(FTP_HOST, timeout=60)
     print("Koneksi host berhasil, mencoba login...")
     ftp.login(FTP_USER, FTP_PASS)
-    print("Connected to FTP")
+    ftp.set_pasv(True)  # <--- WAJIB UNTUK CLOUD/GITHUB ACTIONS
+    print("Connected to FTP (Passive Mode Active)")
 
     remote_dir = cari_remote_dir(ftp)
     if remote_dir is None:
@@ -187,7 +185,7 @@ def ambil_data_radar_api():
         subprocess.run(
             [PYTHON_EXE, SCRIPT_UNDUH_RADAR],
             timeout=60,
-            capture_output=False # Biarkan outputnya tercetak langsung ke terminal
+            capture_output=False
         )
     except subprocess.TimeoutExpired:
         print("[RADAR] Timeout (>60s) saat mengunduh radar. Dilewati.")
@@ -360,54 +358,30 @@ def buat_semua_gif():
             buat_gif_dari_daftar(map_radar_frames, os.path.join(LOCAL_DIR, f"RADAR_{radar}_ANIMASI.gif"), background_hitam=False)
 
 # =============================================================
-# JADWAL WAKTU
-# =============================================================
-def waktu_jalan_berikutnya():
-    sekarang = datetime.now()
-    menit_bulat_berikutnya = ((sekarang.minute // INTERVAL_MENIT) + 1) * INTERVAL_MENIT
-
-    if menit_bulat_berikutnya >= 60:
-        target = sekarang.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
-    else:
-        target = sekarang.replace(minute=menit_bulat_berikutnya, second=0, microsecond=0)
-
-    return target + timedelta(seconds=DELAY_SETELAH_MENIT_BULAT)
-
-# =============================================================
-# MAIN LOOP
+# MAIN LOGIC (Satu Kali Eksekusi untuk GitHub Actions)
 # =============================================================
 if __name__ == "__main__":
-    print("=== AUTO HIMAWARI B13 + RADAR SIDARMA + LOG EWS ===")
-    print("Interval:", INTERVAL_MENIT, "menit")
-    print("Tekan CTRL+C untuk menghentikan.\n")
+    print("=== AUTO HIMAWARI B13 + RADAR SIDARMA + LOG EWS (CLOUD VERSION) ===")
 
-    while True:
-        try:
-            # 1. Download Satelit
-            hasil_download = auto_ftp_download()
-            
-            # 2. Download Radar
-            ambil_data_radar_api()
-            
-            # 3. Eksekusi Proses (Hanya jika ada satelit)
-            if hasil_download:
-                proses_semua_file()
-                buat_semua_gif()
-            else:
-                print("Tidak ada file satelit baru.")
+    try:
+        # 1. Download Satelit
+        hasil_download = auto_ftp_download()
+        
+        # 2. Download Radar
+        ambil_data_radar_api()
+        
+        # 3. Eksekusi Proses (Hanya jika ada satelit)
+        if hasil_download:
+            proses_semua_file()
+            buat_semua_gif()
+        else:
+            print("Tidak ada file satelit baru.")
 
-            # 4. Ambil Angin
-            print("\n--- Ambil data angin AWS Center ---")
-            ambil_data_angin_aws()
-            
-        except KeyboardInterrupt:
-            print("Program dihentikan oleh user.")
-            break
-        except Exception as e:
-            print("Terjadi error di loop utama:", e)
-
-        # Tunggu siklus berikutnya
-        target = waktu_jalan_berikutnya()
-        detik_tunggu = max((target - datetime.now()).total_seconds(), 1)
-        print(f"Menunggu sampai {target.strftime('%H:%M:%S')} ({int(detik_tunggu)} detik)...\n")
-        time.sleep(detik_tunggu)
+        # 4. Ambil Angin
+        print("\n--- Ambil data angin AWS Center ---")
+        ambil_data_angin_aws()
+        
+        print("\n=== SEMUA PROSES SELESAI DENGAN SUKSES ===")
+        
+    except Exception as e:
+        print(f"Terjadi error kritis pada eksekusi utama: {e}")
