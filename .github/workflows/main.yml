@@ -25,7 +25,7 @@ jobs:
           TZ: Asia/Jakarta
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
-        run: python proses_himawari_dan_log_cb.py
+        run: python -u proses_himawari_dan_log_cb.py
 
       - name: Simpan Data Baru ke GitHub
         run: |
