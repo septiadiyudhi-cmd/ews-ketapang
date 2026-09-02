@@ -133,6 +133,7 @@ def bersihkan_local_dir():
 def auto_ftp_download():
     print("\n=== KONEKSI FTP (SATELIT) ===")
     ftp = FTP(FTP_HOST, timeout=60)
+    print("Koneksi host berhasil, mencoba login...")
     ftp.login(FTP_USER, FTP_PASS)
     print("Connected to FTP")
 
