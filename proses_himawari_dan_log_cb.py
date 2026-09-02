@@ -130,7 +130,7 @@ def bersihkan_local_dir():
 # =============================================================
 def auto_ftp_download():
     print("\n=== KONEKSI FTP (SATELIT) ===")
-    ftp = FTP(FTP_HOST, timeout=60)
+    ftp = FTP(FTP_HOST, timeout=600)
     print("Koneksi host berhasil, mencoba login...")
     ftp.login(FTP_USER, FTP_PASS)
     ftp.set_pasv(True)  # <--- WAJIB UNTUK CLOUD/GITHUB ACTIONS
