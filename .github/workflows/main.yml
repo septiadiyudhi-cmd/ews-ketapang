@@ -22,8 +22,10 @@ jobs:
 
       - name: Jalankan Skrip Unduh & Proses
         env:
-          TZ: Asia/Jakarta  # <--- (BARU) Memaksa server menggunakan waktu WIB
-        run: python proses_himawari_dan_log_cb.py # <--- CEK BARIS INI
+          TZ: Asia/Jakarta
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+        run: python Satelit/proses_himawari_dan_log_cb.py
 
       - name: Simpan Data Baru ke GitHub
         run: |
