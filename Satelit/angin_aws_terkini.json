@@ -1,0 +1,23 @@
+{
+  "waktu_ambil": "2026-09-03 17:00:58",
+  "kecepatan_maks_knot": null,
+  "stasiun_maks": null,
+  "detail_per_stasiun": {
+    "Gilimanuk": {
+      "kecepatan_maks_asli": null,
+      "satuan_asli": "ms",
+      "waktu_data_utc": null,
+      "nama_lengkap": null
+    },
+    "Ketapang": {
+      "kecepatan_maks_asli": null,
+      "satuan_asli": "ms",
+      "waktu_data_utc": null,
+      "nama_lengkap": null
+    }
+  },
+  "error": [
+    "Gilimanuk: Respons bukan JSON -- sesi login kemungkinan sudah kadaluarsa. Jalankan ulang login_aws_dan_simpan_cookie.py.",
+    "Ketapang: Respons bukan JSON -- sesi login kemungkinan sudah kadaluarsa. Jalankan ulang login_aws_dan_simpan_cookie.py."
+  ]
+}
