@@ -7,3 +7,5 @@ Pillow
 cartopy
 matplotlib
 numpy
+xarray
+netCDF4
