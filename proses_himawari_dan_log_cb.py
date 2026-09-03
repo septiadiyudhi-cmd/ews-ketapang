@@ -131,15 +131,15 @@ def bersihkan_local_dir():
 def auto_ftp_download():
     print("\n=== KONEKSI FTP (SATELIT) ===")
     ftp = FTP(FTP_HOST, timeout=600)
-    print("Koneksi host berhasil, mencoba login...")
+    print("Koneksi host berhasil, mencari daftar file...")
     ftp.login(FTP_USER, FTP_PASS)
-    ftp.set_pasv(True)  # <--- WAJIB UNTUK CLOUD/GITHUB ACTIONS
-    print("Connected to FTP (Passive Mode Active)")
+    ftp.set_pasv(True)
 
     remote_dir = cari_remote_dir(ftp)
     if remote_dir is None:
         print("Folder FTP hari ini/kemarin tidak ditemukan.")
-        ftp.quit()
+        try: ftp.quit()
+        except: pass
         return []
 
     semua_file = ftp.nlst()
@@ -147,7 +147,8 @@ def auto_ftp_download():
 
     if not file_nc:
         print(f"Tidak ada file {BAND} di {remote_dir}")
-        ftp.quit()
+        try: ftp.quit()
+        except: pass
         return []
 
     file_terbaru = sorted(file_nc, key=ambil_timestamp)[-JUMLAH_FILE:]
@@ -157,19 +158,33 @@ def auto_ftp_download():
         print(" -", nama)
 
     bersihkan_local_dir()
+    
+    # Tutup koneksi pencarian agar tidak idle dan diputus sepihak
+    try: ftp.quit()
+    except: pass
 
     hasil_download = []
+    # UNDUH SATU PER SATU DENGAN KONEKSI BARU
     for nama_file in file_terbaru:
         local_path = os.path.join(LOCAL_DIR, nama_file)
+        print(f"\nMengunduh {nama_file}...")
         try:
+            # Buka koneksi baru KHUSUS untuk 1 file ini
+            ftp_dl = FTP(FTP_HOST, timeout=600)
+            ftp_dl.login(FTP_USER, FTP_PASS)
+            ftp_dl.set_pasv(True)
+            ftp_dl.cwd(remote_dir)
+            
             with open(local_path, "wb") as f:
-                ftp.retrbinary(f"RETR {nama_file}", f.write)
+                ftp_dl.retrbinary(f"RETR {nama_file}", f.write)
+                
+            ftp_dl.quit() # Tutup dengan rapi setelah 1 file sukses
+            
             hasil_download.append(local_path)
-            print("Selesai:", nama_file)
+            print(f"[SUKSES] Selesai unduh: {nama_file}")
         except Exception as e:
-            print("Gagal download:", nama_file, e)
+            print(f"[GAGAL] Gagal download {nama_file}: {e}")
 
-    ftp.quit()
     return hasil_download
 
 # =============================================================
