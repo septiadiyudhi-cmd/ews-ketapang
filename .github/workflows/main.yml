@@ -2,12 +2,12 @@ name: Auto Update EWS
 
 on:
   schedule:
-    - cron: '*/30 * * * *' 
+    - cron: '*/60 * * * *' 
   workflow_dispatch: 
 
 jobs:
   update-data:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Tarik kode dari repository
         uses: actions/checkout@v3
