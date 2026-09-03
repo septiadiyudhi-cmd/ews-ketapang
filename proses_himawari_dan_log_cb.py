@@ -31,7 +31,7 @@ REMOTE_BASE_DIR = "/himawari6/netcdf/Indonesia"
 LOCAL_DIR = "./Satelit"
 CACHE_DIR = os.path.join(LOCAL_DIR, "_cache")
 
-JUMLAH_FILE = 5
+JUMLAH_FILE = 1
 EKSTENSI = ".nc"
 BAND = "B13"
 
@@ -178,7 +178,7 @@ def auto_ftp_download():
                 "curl", "-u", f"{FTP_USER}:{FTP_PASS}",
                 "--ftp-pasv",
                 "--connect-timeout", "30",
-                "--max-time", "600",
+                "--max-time", "900",
                 url_ftp, "-o", local_path
             ], check=True)
             
