@@ -1,0 +1,40 @@
+[
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1819971138,
+    "httpOnly": true,
+    "name": "cf_clearance",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "187UkQ_7kkLYNUKTekKpJ.KOj9ZvA54e.ju.B91BzRg-1788435140-1.2.1.1-P4IwGypHJmRbnr1DrhQF1fMdaM_p1vwQ1zoDgB9BY5kYq7XH9dEnVKQWPS56ShLzxIH1CLsPPgTRAZDaQFf72wUNtg3hBQJ2SJ5Rj8crY4Ryt8tAX9ZSeu0X0lUdIiOORWdDtnEGryLKryACmBwKfohYpMT_lJqys365.Yi4Pvj3O4NS6w.Fa9w0sm3BjeJJQBppSiiNw95sEjDSHOYmW0zHt0Y_CqLxaPNydNgfxQbpaKil2jabnOlhHSajnfUbxGr6WTsc6ineYLQ_9m43DPXtJlY3Fox.J3EIZpIGFB6vYiuM0qNkb2w4.NtEjxtSsgEPtrGIBED5pmE7YAccAqEutC3JpnZYjodX3.4RzibIPm8Gjyl4OI6kpNTNieNvMb5v7fJlC9IY2h8rbFsvVg"
+  },
+  {
+    "domain": "awscenter.bmkg.go.id",
+    "httpOnly": false,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "4n11sb7ds530khimkbobuetr62"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "httpOnly": true,
+    "name": "cfzs_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_pageviewCounter%22%3A%7B%22v%22%3A%222%22%7D%2C%220bd2_conversionCounter%22%3A%7B%22v%22%3A%222%22%7D%7D"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1819971154,
+    "httpOnly": true,
+    "name": "cfz_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_engagementDuration%22%3A%7B%22v%22%3A%220%22%2C%22e%22%3A1819971155702%7D%2C%220bd2_engagementStart%22%3A%7B%22v%22%3A%221788435155702%22%2C%22e%22%3A1819971155702%7D%2C%220bd2_counter%22%3A%7B%22v%22%3A%225%22%2C%22e%22%3A1819971155702%7D%2C%220bd2_ga4sid%22%3A%7B%22v%22%3A%22655004270%22%2C%22e%22%3A1788436955702%7D%2C%220bd2_session_counter%22%3A%7B%22v%22%3A%221%22%2C%22e%22%3A1819971155702%7D%2C%220bd2_ga4%22%3A%7B%22v%22%3A%22ecc7e36c-557a-4932-8fc5-967ad0633f78%22%2C%22e%22%3A1819971155702%7D%2C%220bd2__z_ga_audiences%22%3A%7B%22v%22%3A%22ecc7e36c-557a-4932-8fc5-967ad0633f78%22%2C%22e%22%3A1819971139986%7D%2C%220bd2_let%22%3A%7B%22v%22%3A%221788435155702%22%2C%22e%22%3A1819971155702%7D%7D"
+  }
+]
