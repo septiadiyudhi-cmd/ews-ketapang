@@ -9,3 +9,4 @@ matplotlib
 numpy
 xarray
 netCDF4
+scipy
