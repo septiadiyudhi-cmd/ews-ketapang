@@ -164,26 +164,28 @@ def auto_ftp_download():
     except: pass
 
     hasil_download = []
-    # UNDUH SATU PER SATU DENGAN KONEKSI BARU
+    # UNDUH MENGGUNAKAN cURL BUKAN Python ftplib
     for nama_file in file_terbaru:
         local_path = os.path.join(LOCAL_DIR, nama_file)
-        print(f"\nMengunduh {nama_file}...")
+        print(f"\nMengunduh {nama_file} menggunakan cURL...")
+        
+        # URL lengkap menuju file FTP
+        url_ftp = f"ftp://{FTP_HOST}{remote_dir}/{nama_file}"
+        
         try:
-            # Buka koneksi baru KHUSUS untuk 1 file ini
-            ftp_dl = FTP(FTP_HOST, timeout=600)
-            ftp_dl.login(FTP_USER, FTP_PASS)
-            ftp_dl.set_pasv(True)
-            ftp_dl.cwd(remote_dir)
-            
-            with open(local_path, "wb") as f:
-                ftp_dl.retrbinary(f"RETR {nama_file}", f.write)
-                
-            ftp_dl.quit() # Tutup dengan rapi setelah 1 file sukses
+            # Panggil cURL via terminal dengan batas waktu maksimal 10 menit
+            subprocess.run([
+                "curl", "-u", f"{FTP_USER}:{FTP_PASS}",
+                "--ftp-pasv",
+                "--connect-timeout", "30",
+                "--max-time", "600",
+                url_ftp, "-o", local_path
+            ], check=True)
             
             hasil_download.append(local_path)
             print(f"[SUKSES] Selesai unduh: {nama_file}")
-        except Exception as e:
-            print(f"[GAGAL] Gagal download {nama_file}: {e}")
+        except subprocess.CalledProcessError as e:
+            print(f"[GAGAL] cURL gagal mengunduh {nama_file}: {e}")
 
     return hasil_download
 
