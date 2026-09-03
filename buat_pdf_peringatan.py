@@ -46,7 +46,7 @@ TELP = "081130569102"
 EMAIL = "ketapangbmkg.gmail.com"
 
 # Isi dengan path file logo (PNG/JPG) kalau ada, contoh:
-LOGO_PATH = r"C:\Users\bmkg bwi\Documents\Yudhi\logo_bmkg.png"
+#LOGO_PATH = "./Satelit"/logo_bmkg.png"
 #LOGO_PATH = None
 
 JUDUL_DOKUMEN = "PERINGATAN DINI CUACA PENYEBERANGAN KETAPANG-GILIMANUK"
