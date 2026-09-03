@@ -31,7 +31,7 @@ REMOTE_BASE_DIR = "/himawari6/netcdf/Indonesia"
 LOCAL_DIR = "./Satelit"
 CACHE_DIR = os.path.join(LOCAL_DIR, "_cache")
 
-JUMLAH_FILE = 1
+JUMLAH_FILE = 5
 EKSTENSI = ".nc"
 BAND = "B13"
 
