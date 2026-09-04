@@ -11,7 +11,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-LOGIN_URL = "http://172.19.1.163:8080/login.php"
+# Mengambil URL dari Secret (jika di Cloud) atau meminta input manual (jika di PC)
+LOGIN_URL = os.environ.get("SIDARMA_LOGIN_URL")
+if not LOGIN_URL:
+    LOGIN_URL = input("Masukkan URL Login SIDARMA: ")
+
 LOCAL_DIR = "./Satelit"
 COOKIE_FILE = os.path.join(LOCAL_DIR, "sidarma_cookies.json")
 
