@@ -47,7 +47,7 @@ POLA_TIMESTAMP = re.compile(r"(\d{12})\.nc$", re.IGNORECASE)
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.230, "lon": 113.030},
-    "DENPASAR": {"lat": -8.748, "lon": 115.167},
+    "DENPASAR": {"lat": -8.748, "lon": 115.767},
 }
 RADIUS_RADAR_KM = 250.0
 
