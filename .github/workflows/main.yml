@@ -18,6 +18,8 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
+          RADAR_API_URL: ${{ secrets.RADAR_API_URL }}
+          RADAR_REFERER: ${{ secrets.RADAR_REFERER }}
         run: C:/Users/anaconda/python.exe -u proses_himawari_dan_log_cb.py
 
       - name: Simpan Data Baru ke GitHub
