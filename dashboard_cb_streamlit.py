@@ -5,6 +5,15 @@ Penyeberangan Ketapang - Gilimanuk (Satelit + Radar)
 """
 
 import os
+import time
+
+# Paksa server menggunakan zona waktu WIB
+os.environ['TZ'] = 'Asia/Jakarta'
+try:
+    time.tzset()
+except AttributeError:
+    pass
+
 import glob
 import json
 from datetime import datetime, timedelta
