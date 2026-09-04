@@ -199,8 +199,13 @@ with col_logo:
     else:
         st.markdown("### 🌊")
 with col_judul:
-    st.markdown("## EARLY WARNING SYSTEM - MULTI SENSOR (Satelit & Radar)")
-    st.markdown("**Kantor Layanan Meteorologi Maritim Ketapang-Gilimanuk**")
+    st.markdown(
+        """
+        <h1 style='font-size: 40px; margin-bottom: 0; padding-bottom: 0;'>EARLY WARNING SYSTEM - MULTI SENSOR (Satelit & Radar)</h1>
+        <p style='font-size: 22px; font-weight: bold; color: #cccccc; margin-top: 5px;'>Kantor Layanan Meteorologi Maritim Ketapang-Gilimanuk</p>
+        """, 
+        unsafe_allow_html=True
+    )
 
 st.divider()
 
