@@ -189,8 +189,8 @@ else:
 # =============================================================
 col_logo, col_judul = st.columns([1.5, 10])
 with col_logo: 
-    if os.path.exists("logo_bmkg.png"):
-        st.image("logo_bmkg.png", width=130)
+    if os.path.exists("logo_bmkg_2.png"):
+        st.image("logo_bmkg_2.png", width=130)
     else:
         st.markdown("### 🌊")
 with col_judul:
