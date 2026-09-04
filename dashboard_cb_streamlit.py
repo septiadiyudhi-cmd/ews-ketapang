@@ -149,24 +149,48 @@ try:
 except Exception:
     data_basi = True
 
+# =============================================================
+# KLASIFIKASI & NARASI KONDISI (Radar & Satelit)
+# =============================================================
 kategori_radar = "Belum Terdeteksi"
 warna_radar = "gray"
+teks_radar = "Tidak ada gema curah hujan signifikan."
+
 if pd.notna(dbz_terbaru) and dbz_terbaru != "":
     val = float(dbz_terbaru)
     if val >= 40:
         kategori_radar, warna_radar = "Hujan Lebat (>40 dBZ)", "#ff3333"
+        teks_radar = "Sel konvektif kuat berpotensi cuaca buruk (hujan lebat/petir)."
     elif val >= 20:
         kategori_radar, warna_radar = "Hujan Sedang (20-40 dBZ)", "#ffcc00"
+        teks_radar = "Terdeteksi aktivitas awan konvektif (penghasil hujan sedang)."
     elif val >= 5:
         kategori_radar, warna_radar = "Hujan Ringan (5-19 dBZ)", "#33cc66"
+        teks_radar = "Terpantau tutupan awan hujan ringan (non-konvektif/lemah)."
+
+# Logika Narasi Satelit
+try:
+    suhu_min_all = min(
+        float(suhu_10km_terbaru) if pd.notna(suhu_10km_terbaru) else 999,
+        float(suhu_20km_terbaru) if pd.notna(suhu_20km_terbaru) else 999
+    )
+except Exception:
+    suhu_min_all = 999
+
+if suhu_min_all <= AMBANG_SEL_SIGNIFIKAN_C:
+    teks_satelit = "Indikasi kuat pertumbuhan awan Cumulonimbus (CB) aktif."
+    warna_teks_satelit = "#ff3333"
+else:
+    teks_satelit = "Tidak ada indikasi awan konvektif bersuhu puncak rendah."
+    warna_teks_satelit = "#33cc66"
 
 # =============================================================
 # TAMPILAN DASHBOARD
 # =============================================================
-col_logo, col_judul = st.columns([1.5, 10])  # Jatah kolom logo diperlebar (dari 1 menjadi 1.5)
+col_logo, col_judul = st.columns([1.5, 10])
 with col_logo: 
-    if os.path.exists("logo_bmkg_2.png"):
-        st.image("logo_bmkg_2.png", width=130) # Ukuran logo dibesarkan (misal dari 80 menjadi 130)
+    if os.path.exists("logo_bmkg.png"):
+        st.image("logo_bmkg.png", width=130)
     else:
         st.markdown("### 🌊")
 with col_judul:
@@ -175,32 +199,55 @@ with col_judul:
 
 st.divider()
 
+# -------------------------------------------------------------
+# RINGKASAN STATUS
+# -------------------------------------------------------------
 col_status, col_suhu, col_radar = st.columns([2, 2, 3])
+
 with col_status:
     warna = WARNA_STATUS.get(status_terbaru, "gray")
     st.markdown(
         f"""
-        <div style="background-color:{warna}22; border:2px solid {warna}; border-radius:8px; padding:16px; text-align:center;">
+        <div style="background-color:{warna}22; border:2px solid {warna}; border-radius:8px; padding:16px; text-align:center; height:100%;">
             <div style="font-size:14px; color:#cccccc;">Status Saat Ini</div>
-            <div style="font-size:32px; font-weight:bold; color:{warna};">{status_terbaru}</div>
+            <div style="font-size:32px; font-weight:bold; color:{warna}; margin: 8px 0;">{status_terbaru}</div>
             <div style="font-size:12px; color:#aaaaaa;">Pukul {waktu_terbaru} WIB</div>
         </div>
         """, unsafe_allow_html=True
     )
 
 with col_suhu:
-    st.metric("Suhu Min. (Radius 10 km)", f"{suhu_10km_terbaru} °C" if pd.notna(suhu_10km_terbaru) else "-")
-    st.metric("Suhu Min. (Radius 20 km)", f"{suhu_20km_terbaru} °C" if pd.notna(suhu_20km_terbaru) else "-")
+    st.markdown(
+        f"""
+        <div style="background-color:{warna_teks_satelit}22; border:2px solid {warna_teks_satelit}; border-radius:8px; padding:16px; height:100%;">
+            <div style="font-size:14px; color:#cccccc; margin-bottom:8px;">Suhu Puncak Awan (Satelit)</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="font-size:14px; color:#ffffff;">Radius 10 km:</span>
+                <strong style="font-size:16px; color:#ffffff;">{suhu_10km_terbaru if pd.notna(suhu_10km_terbaru) else '-'} °C</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="font-size:14px; color:#ffffff;">Radius 20 km:</span>
+                <strong style="font-size:16px; color:#ffffff;">{suhu_20km_terbaru if pd.notna(suhu_20km_terbaru) else '-'} °C</strong>
+            </div>
+            <div style="font-size:13px; color:{warna_teks_satelit}; font-weight:600; border-top:1px solid {warna_teks_satelit}55; padding-top:8px; line-height:1.4;">
+                {teks_satelit}
+            </div>
+        </div>
+        """, unsafe_allow_html=True
+    )
 
 with col_radar:
     st.markdown(
         f"""
-        <div style="background-color:{warna_radar}22; border:2px solid {warna_radar}; border-radius:8px; padding:16px;">
+        <div style="background-color:{warna_radar}22; border:2px solid {warna_radar}; border-radius:8px; padding:16px; height:100%;">
             <div style="font-size:14px; color:#cccccc;">Intensitas Radar Maksimum (Radius 20 km)</div>
-            <div style="font-size:24px; font-weight:bold; color:{warna_radar}; margin-top:8px;">
+            <div style="font-size:24px; font-weight:bold; color:{warna_radar}; margin-top:4px;">
                 {dbz_terbaru if pd.notna(dbz_terbaru) and dbz_terbaru != "" else "-"} dBZ
             </div>
-            <div style="font-size:16px; color:#ffffff;">{kategori_radar}</div>
+            <div style="font-size:14px; color:#ffffff; margin-bottom:8px;">{kategori_radar}</div>
+            <div style="font-size:13px; color:{warna_radar}; font-weight:600; border-top:1px solid {warna_radar}55; padding-top:8px; line-height:1.4;">
+                {teks_radar}
+            </div>
         </div>
         """, unsafe_allow_html=True
     )
