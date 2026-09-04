@@ -80,7 +80,7 @@ st.markdown(
     .stApp { background-color: #0e1117; }
     /* Memperbesar ukuran teks pada Menu Tab */
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-        font-size: 38px;  /* Angka ini diperbesar */
+        font-size: 42px;  /* Angka ini diperbesar */
         font-weight: bold; /* Dibuat lebih tebal */
     }
     </style>
@@ -348,7 +348,7 @@ with tab_utama:
             st.metric("Kecepatan Awal", _fmt(speed, "km/h"))
 
         # Menambahkan jarak spasi ekstra
-        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
 
         st.markdown("#### 📈 Tren Suhu Puncak Awan (24 Jam Terakhir)")
         df_24jam = df_log[df_log["waktu_wib_dt"] >= (df_log["waktu_wib_dt"].max() - timedelta(hours=24))]
