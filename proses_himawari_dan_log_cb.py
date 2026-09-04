@@ -131,7 +131,7 @@ def bersihkan_local_dir():
 # =============================================================
 def auto_ftp_download():
     print("\n=== KONEKSI FTP (SATELIT) ===")
-    ftp = FTP(FTP_HOST, timeout=30)
+    ftp = FTP(FTP_HOST, timeout=60)
     print("Koneksi host berhasil, mencari daftar file...")
     ftp.login(FTP_USER, FTP_PASS)
     ftp.set_pasv(True)
