@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
+import cartopy.io.img_tiles as cimgt  # <-- Modul untuk basemap citra satelit asli
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.460, "lon": 112.730},
@@ -27,16 +28,23 @@ def gambar_peta_radar(radar_nama, file_input, file_output):
     print(f"Menggambar peta untuk: {os.path.basename(file_input)}")
     info = INFO_RADAR[radar_nama.upper()]
     
+    # 1. PERSIAPAN BASEMAP SATELIT ASLI
+    tiler = cimgt.QuadtreeTiles()
     fig = plt.figure(figsize=FIGSIZE, dpi=DPI, facecolor="#0e1117")
-    ax = plt.axes(projection=ccrs.PlateCarree())
-    ax.set_facecolor("#0a192f")  # Warna laut gelap
+    
+    # Proyeksi peta mengikuti tiler (Web Mercator)
+    ax = plt.axes(projection=tiler.crs)
     
     # Batas peta (sekitar 2.5 derajat dari pusat radar)
-    ax.set_extent([info["lon"] - 2.5, info["lon"] + 2.5, info["lat"] - 2.5, info["lat"] + 2.5], crs=ccrs.PlateCarree())
+    batas_extent = [info["lon"] - 2.5, info["lon"] + 2.5, info["lat"] - 2.5, info["lat"] + 2.5]
+    ax.set_extent(batas_extent, crs=ccrs.PlateCarree())
 
-    # Garis Pantai & Grid
-    ax.add_feature(cfeature.COASTLINE.with_scale("10m"), edgecolor="#555555", linewidth=1.5, zorder=5)
-    ax.add_feature(cfeature.BORDERS.with_scale("10m"), edgecolor="#555555", linewidth=1.0, zorder=5)
+    # Tambahkan gambar satelit ke latar belakang (Zoom level 8)
+    ax.add_image(tiler, 8)
+
+    # Garis Pantai & Grid (Warna diubah putih agak transparan agar kontras dengan citra satelit)
+    ax.add_feature(cfeature.COASTLINE.with_scale("10m"), edgecolor="#ffffff", alpha=0.7, linewidth=1.5, zorder=5)
+    ax.add_feature(cfeature.BORDERS.with_scale("10m"), edgecolor="#ffffff", alpha=0.5, linewidth=1.0, zorder=5)
     
     # 1. GRIDLINES DENGAN TEKS KOORDINAT WARNA MERAH
     gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True, linewidth=0.5, color="gray", alpha=0.5, linestyle="--", zorder=6)
