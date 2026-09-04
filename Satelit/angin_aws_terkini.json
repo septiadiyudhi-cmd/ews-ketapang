@@ -1,18 +1,18 @@
 {
-  "waktu_ambil": "2026-09-04 19:29:26",
+  "waktu_ambil": "2026-09-04 19:59:10",
   "kecepatan_maks_knot": 9.5,
   "stasiun_maks": "Gilimanuk",
   "detail_per_stasiun": {
     "Gilimanuk": {
       "kecepatan_maks_asli": 4.9,
       "satuan_asli": "ms",
-      "waktu_data_utc": "2026-09-04 18:21:00",
+      "waktu_data_utc": "2026-09-04 18:51:00",
       "nama_lengkap": "AWS Maritim Gilimanuk"
     },
     "Ketapang": {
-      "kecepatan_maks_asli": 4.7,
+      "kecepatan_maks_asli": 4.1,
       "satuan_asli": "ms",
-      "waktu_data_utc": "2026-09-04 18:21:00",
+      "waktu_data_utc": "2026-09-04 18:51:00",
       "nama_lengkap": "AWS Maritim Ketapang"
     }
   },
