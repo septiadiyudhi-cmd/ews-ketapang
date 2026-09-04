@@ -16,7 +16,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
 INFO_RADAR = {
-    "SURABAYA": {"lat": -7.230, "lon": 113.030},
+    "SURABAYA": {"lat": -7.530, "lon": 112.830},
     "DENPASAR": {"lat": -8.748, "lon": 115.177},
 }
 RADIUS_RADAR_KM = 250.0
