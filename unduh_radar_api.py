@@ -8,7 +8,10 @@ from datetime import datetime
 LOCAL_DIR = "./Satelit"
 COOKIE_FILE = os.path.join(LOCAL_DIR, "sidarma_cookies.json")
 RADAR_LIST = ["Denpasar", "Surabaya"]
-API_URL = "http://172.19.1.163:8080/api/sidarmaimage.php"
+
+# Alamat API dan Referer disembunyikan menggunakan variabel lingkungan
+API_URL = os.environ.get("RADAR_API_URL")
+REFERER_URL = os.environ.get("RADAR_REFERER")
 
 def muat_cookies():
     with open(COOKIE_FILE, "r", encoding="utf-8") as f:
@@ -24,7 +27,8 @@ def buat_session():
     
     session.headers.update({
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "http://172.19.1.163:8080/index.php",
+        # Menggunakan variabel rahasia, atau string kosong jika tidak ada
+        "Referer": REFERER_URL or "",
     })
     return session
 
