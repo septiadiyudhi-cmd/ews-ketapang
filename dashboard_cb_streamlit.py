@@ -395,11 +395,20 @@ TEMPLATE_DAMPAK = {
 _valid_until_default_dt = datetime.now() + timedelta(hours=3)
 _valid_until_default_str = _valid_until_default_dt.strftime("%H:%M")
 
+# --- FORMAT TANGGAL INDONESIA ---
+try:
+    w_dt = datetime.strptime(waktu_terbaru, "%Y-%m-%d %H:%M")
+    bln = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+    waktu_terbaru_fmt = f"{w_dt.day} {bln[w_dt.month]} {w_dt.year} pukul {w_dt.strftime('%H:%M')}"
+except Exception:
+    waktu_terbaru_fmt = f"pukul {waktu_terbaru}"
+# --------------------------------
+
 if status_terbaru not in TEMPLATE_DAMPAK:
     narasi_saran = (
         f"Kondisi cuaca di sekitar {LOKASI_EWS} secara umum aman, tidak terpantau "
         f"indikasi signifikan awan konvektif (Cumulonimbus) dalam radius pemantauan "
-        f"pada pukul {waktu_terbaru} WIB. Kondisi ini diperkirakan dapat berlaku "
+        f"pada {waktu_terbaru_fmt} WIB. Kondisi ini diperkirakan dapat berlaku "
         f"hingga pukul {_valid_until_default_str} WIB."
     )
 else:
