@@ -20,10 +20,13 @@ jobs:
         run: C:/Users/anaconda/python.exe -u proses_himawari_dan_log_cb.py
 
       - name: Simpan Data Baru ke GitHub
-        shell: bash
         run: |
           git config --global user.name 'Robot EWS'
           git config --global user.email 'robot@bmkg.go.id'
           git add .
-          git commit -m "Auto-update data EWS" || echo "Tidak ada perubahan"
-          git push
+          if (git status --porcelain) {
+            git commit -m "Auto-update data EWS"
+            git push
+          } else {
+            echo "Tidak ada perubahan"
+          }
