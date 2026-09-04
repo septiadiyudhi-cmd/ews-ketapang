@@ -159,7 +159,7 @@ except Exception:
 # =============================================================
 kategori_radar = "Belum Terdeteksi"
 warna_radar = "gray"
-teks_radar = "Tidak ada gema curah hujan signifikan."
+teks_radar = "Tidak ada Precipitation Echo."
 
 if pd.notna(dbz_terbaru) and dbz_terbaru != "":
     val = float(dbz_terbaru)
@@ -186,7 +186,7 @@ if suhu_min_all <= AMBANG_SEL_SIGNIFIKAN_C:
     teks_satelit = "Indikasi kuat pertumbuhan awan Cumulonimbus (CB) aktif."
     warna_teks_satelit = "#ff3333"
 else:
-    teks_satelit = "Tidak ada indikasi awan konvektif bersuhu puncak rendah."
+    teks_satelit = "Tidak ada indikasi awan konvektif."
     warna_teks_satelit = "#33cc66"
 
 # =============================================================
@@ -390,8 +390,8 @@ with tab_utama:
 # TAB 2: ANIMASI RADAR
 # =============================================================
 with tab_radar:
-    st.markdown("### 📡 Animasi Radar Cuaca Mandiri (CMAX)")
-    st.info("Peta Radar di bawah ini menampilkan pergerakan gema hujan secara independen dari gabungan satelit.")
+    st.markdown("### 📡 Animasi Radar Cuaca (CMAX)")
+    st.info("Peta Radar di bawah ini menampilkan pergerakan Precipitation Echo.")
     
     col_r1, col_r2 = st.columns(2)
     with col_r1:
