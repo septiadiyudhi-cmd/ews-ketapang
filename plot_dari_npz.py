@@ -159,7 +159,7 @@ def gambar_dari_npz(npz_path):
     cbar.ax.tick_params(colors="white", labelsize=10)
 
     waktu_judul = format_waktu_satellite(nama_file)
-    ax.set_title(f"EWS Multi-Sensor (H09 + Radar): {waktu_judul}  |  Status: {status}", loc="left", fontsize=16, fontweight="bold", color="#fff8cf", pad=12)
+    ax.set_title(f"EWS Multi-Sensor (Satelit + Radar): {waktu_judul}  |  Status: {status}", loc="left", fontsize=16, fontweight="bold", color="#fff8cf", pad=12)
     ax.text(0.99, 0.985, "© BMKG - Stasiun Meteorologi Banyuwangi", transform=ax.transAxes, ha="right", va="top", fontsize=10, color="lightgray")
 
     nama_png = os.path.splitext(nama_file)[0] + ".png"
