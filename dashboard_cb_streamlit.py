@@ -80,8 +80,8 @@ st.markdown(
     .stApp { background-color: #0e1117; }
     /* Memperbesar ukuran teks pada Menu Tab */
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 24px;  /* Angka ini diperbesar */
+        font-weight: bold; /* Dibuat lebih tebal */
     }
     </style>
     """,
