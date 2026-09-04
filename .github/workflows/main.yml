@@ -12,9 +12,6 @@ jobs:
       - name: Tarik kode dari repository
         uses: actions/checkout@v3
 
-      - name: Instal Library
-        run: pip install -r requirements.txt
-
       - name: Jalankan Skrip Unduh & Proses
         env:
           TZ: Asia/Jakarta
