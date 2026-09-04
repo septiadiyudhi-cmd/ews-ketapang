@@ -158,6 +158,22 @@ def gambar_dari_npz(npz_path):
     cbar.set_label("Suhu Satelit (°C)", color="white", fontsize=13)
     cbar.ax.tick_params(colors="white", labelsize=10)
 
+    # 5. TAMBAHAN: COLORBAR RADAR (dBZ)
+    dbz_levels = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+    dbz_colors = [
+        "#00ecec", "#01a0f6", "#0000f6", "#00ff00", "#00c800", "#009000",
+        "#ffff00", "#e7c000", "#ff9000", "#ff0000", "#d60000", "#c00000", "#f800fd"
+    ]
+    cmap_dbz = mcolors.ListedColormap(dbz_colors)
+    norm_dbz = mcolors.BoundaryNorm(dbz_levels, cmap_dbz.N)
+    
+    sm_dbz = plt.cm.ScalarMappable(cmap=cmap_dbz, norm=norm_dbz)
+    sm_dbz.set_array([])
+    
+    cbar_dbz = plt.colorbar(sm_dbz, ax=ax, orientation="vertical", shrink=0.55, pad=0.12)
+    cbar_dbz.set_label("Intensitas Radar (dBZ)", color="white", fontsize=13)
+    cbar_dbz.ax.tick_params(colors="white", labelsize=10)
+
     waktu_judul = format_waktu_satellite(nama_file)
     ax.set_title(f"EWS Multi-Sensor (Satelit + Radar): {waktu_judul}", loc="left", fontsize=16, fontweight="bold", color="#fff8cf", pad=12)
     ax.text(0.99, 0.985, "© BMKG - Stasiun Meteorologi Banyuwangi", transform=ax.transAxes, ha="right", va="top", fontsize=10, color="lightgray")
