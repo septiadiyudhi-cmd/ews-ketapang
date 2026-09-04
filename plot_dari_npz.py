@@ -47,7 +47,7 @@ POLA_TIMESTAMP = re.compile(r"(\d{12})\.nc$", re.IGNORECASE)
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.230, "lon": 113.030},
-    "DENPASAR": {"lat": -8.748, "lon": 115.767},
+    "DENPASAR": {"lat": -8.748, "lon": 115.767}, # Posisi bujur Denpasar sudah digeser ke Timur
 }
 RADIUS_RADAR_KM = 250.0
 
@@ -141,10 +141,11 @@ def gambar_dari_npz(npz_path):
     ax.add_feature(cfeature.BORDERS.with_scale("10m"), edgecolor="white", linewidth=0.8, zorder=30)
     ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, color="white", alpha=0.65, linestyle=":", zorder=30)
 
+    # Menggunakan warna teks asli (#ff5555) dan tanpa fontweight tebal
     for lon_tick in [114.0, 114.3, 114.6, 114.9, 115.2, 115.5, 115.8]:
-        ax.text(lon_tick, -9.20 + 0.02, f"{lon_tick:.1f}°E", transform=ccrs.PlateCarree(), color="red", fontweight="bold", fontsize=10, ha="center", va="bottom", zorder=35)
+        ax.text(lon_tick, -9.20 + 0.02, f"{lon_tick:.1f}\u00b0E", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="center", va="bottom", zorder=35)
     for lat_tick in [-7.2, -7.5, -7.8, -8.1, -8.4, -8.7, -9.0]:
-        ax.text(113.70 + 0.02, lat_tick, f"{abs(lat_tick):.1f}°S", transform=ccrs.PlateCarree(), color="red", fontweight="bold", fontsize=10, ha="left", va="center", rotation=90, zorder=35)
+        ax.text(113.70 + 0.02, lat_tick, f"{abs(lat_tick):.1f}\u00b0S", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="left", va="center", rotation=90, zorder=35)
 
     # 4. PLOT LINGKARAN RADIUS & TARGET KETAPANG (Z-Order: 20-25)
     lon30, lat30 = buat_lingkaran_km(TARGET_LON, TARGET_LAT, RADIUS_WASPADA_KM)
@@ -157,22 +158,6 @@ def gambar_dari_npz(npz_path):
     cbar = plt.colorbar(mesh, ax=ax, orientation="vertical", shrink=0.55, pad=0.035, ticks=TEMP_LEVELS)
     cbar.set_label("Suhu Satelit (°C)", color="white", fontsize=13)
     cbar.ax.tick_params(colors="white", labelsize=10)
-
-    # 5. TAMBAHAN: COLORBAR RADAR (dBZ)
-    dbz_levels = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
-    dbz_colors = [
-        "#00ecec", "#01a0f6", "#0000f6", "#00ff00", "#00c800", "#009000",
-        "#ffff00", "#e7c000", "#ff9000", "#ff0000", "#d60000", "#c00000", "#f800fd"
-    ]
-    cmap_dbz = mcolors.ListedColormap(dbz_colors)
-    norm_dbz = mcolors.BoundaryNorm(dbz_levels, cmap_dbz.N)
-    
-    sm_dbz = plt.cm.ScalarMappable(cmap=cmap_dbz, norm=norm_dbz)
-    sm_dbz.set_array([])
-    
-    cbar_dbz = plt.colorbar(sm_dbz, ax=ax, orientation="vertical", shrink=0.55, pad=0.12)
-    cbar_dbz.set_label("Intensitas Radar (dBZ)", color="white", fontsize=13)
-    cbar_dbz.ax.tick_params(colors="white", labelsize=10)
 
     waktu_judul = format_waktu_satellite(nama_file)
     ax.set_title(f"EWS Multi-Sensor (Satelit + Radar): {waktu_judul}", loc="left", fontsize=16, fontweight="bold", color="#fff8cf", pad=12)
