@@ -24,7 +24,6 @@ LOCAL_DIR = "./Satelit"
 LOG_CSV = os.path.join(LOCAL_DIR, "log_status_cb.csv")
 PNG_TERBARU = os.path.join(LOCAL_DIR, "HIMAWARI_B13_TERBARU.png")
 GIF_ANIMASI = os.path.join(LOCAL_DIR, "HIMAWARI_B13_ANIMASI.gif")
-# Tambahan Path untuk GIF Radar
 GIF_RADAR_SBY = os.path.join(LOCAL_DIR, "RADAR_SURABAYA_ANIMASI.gif")
 GIF_RADAR_DPS = os.path.join(LOCAL_DIR, "RADAR_DENPASAR_ANIMASI.gif")
 
@@ -57,11 +56,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# REFRESH OTOMATIS TIAP 10 MENIT (600.000 milidetik)
+# REFRESH OTOMATIS TIAP 10 MENIT
 st_autorefresh(interval=10 * 60 * 1000, key="ews_refresh")
 
+# Inisialisasi Session State
 if "pdf_terakhir" not in st.session_state:
     st.session_state["pdf_terakhir"] = None
+if "pesan_notif" not in st.session_state:
+    st.session_state["pesan_notif"] = None
 
 st.markdown(
     """
@@ -83,7 +85,6 @@ def muat_log():
     if df.empty:
         return df
     
-    # Memastikan kolom radar ada untuk backward-compatibility
     kolom_wajib = [
         "jumlah_sel_signifikan", "luas_sel_terbesar_km2", "jarak_terdekat_km",
         "initial_heading_deg", "initial_speed_kmh", "cell_lat", "cell_lon", "dbz_maks_radar"
@@ -117,7 +118,6 @@ def simpan_peringatan(baris_baru: dict):
     df_gabung = pd.concat([df_lama, pd.DataFrame([baris_baru])], ignore_index=True).tail(MAKS_BARIS_PERINGATAN)
     df_gabung.to_csv(PERINGATAN_CSV, index=False)
 
-
 # =============================================================
 # MUAT DATA
 # =============================================================
@@ -140,7 +140,6 @@ try:
 except Exception:
     data_basi = True
 
-# Klasifikasi Radar
 kategori_radar = "Belum Terdeteksi"
 warna_radar = "gray"
 if pd.notna(dbz_terbaru) and dbz_terbaru != "":
@@ -156,16 +155,13 @@ if pd.notna(dbz_terbaru) and dbz_terbaru != "":
 # TAMPILAN DASHBOARD
 # =============================================================
 col_logo, col_judul = st.columns([1, 10])
-with col_logo: st.markdown("### \U0001F30A")
+with col_logo: st.markdown("### 🌊")
 with col_judul:
     st.markdown("## EARLY WARNING SYSTEM - MULTI SENSOR (Satelit & Radar)")
     st.markdown("**Kantor Layanan Meteorologi Maritim Ketapang-Gilimanuk**")
 
 st.divider()
 
-# -------------------------------------------------------------
-# RINGKASAN STATUS
-# -------------------------------------------------------------
 col_status, col_suhu, col_radar = st.columns([2, 2, 3])
 with col_status:
     warna = WARNA_STATUS.get(status_terbaru, "gray")
@@ -199,11 +195,11 @@ with col_radar:
 st.divider()
 
 # =============================================================
-# PERINGATAN RESMI YANG SEDANG AKTIF (dipublikasikan forecaster)
+# PERINGATAN RESMI AKTIF
 # =============================================================
 df_peringatan = muat_peringatan()
-
 peringatan_aktif = None
+
 if not df_peringatan.empty:
     sekarang_dt = pd.Timestamp(datetime.now())
     df_masih_berlaku = df_peringatan[df_peringatan["valid_until_dt"] >= sekarang_dt]
@@ -232,21 +228,11 @@ if peringatan_aktif is not None:
 else:
     st.info("Belum ada peringatan resmi yang aktif saat ini. Forecaster dapat membuat peringatan baru di bagian bawah halaman.")
 
-if st.session_state.get("pdf_terakhir") and os.path.exists(st.session_state["pdf_terakhir"]):
-    with open(st.session_state["pdf_terakhir"], "rb") as f:
-        pdf_bytes = f.read()
-    st.download_button(
-        "📄 Download PDF Peringatan Terakhir",
-        data=pdf_bytes,
-        file_name=os.path.basename(st.session_state["pdf_terakhir"]),
-        mime="application/pdf",
-    )
-
 st.divider()
 
-# -------------------------------------------------------------
+# =============================================================
 # CITRA & ANALISIS
-# -------------------------------------------------------------
+# =============================================================
 col_peta, col_kanan = st.columns([1, 1])
 
 with col_peta:
@@ -259,7 +245,6 @@ with col_peta:
         st.info("Belum ada citra satelit yang tersedia.")
         
     daftar_png = daftar_png_histori()
-
     if daftar_png:
         with st.expander("🔍 Lihat citra per-waktu (bukan animasi)"):
             nama_tampil = [os.path.basename(p) for p in daftar_png]
@@ -270,7 +255,6 @@ with col_peta:
             )
             path_terpilih = daftar_png[nama_tampil.index(pilihan)]
             st.image(path_terpilih, width="stretch")
-
 
 with col_kanan:
     st.markdown("#### 📊 Analisis Sel Konvektif Gabungan")
@@ -351,16 +335,12 @@ df_tabel = df_log[[
     })
 
 st.dataframe(df_tabel, width="stretch", height=350)
-
 st.caption(
     "Data diproses otomatis dari citra Himawari-9 kanal B13 tiap 10 menit. "
-    f"Sel awan dengan suhu puncak ≤ {AMBANG_SEL_SIGNIFIKAN_C}°C dianggap signifikan. "
-    f"Status WASPADA jika sel tersebut masuk radius {RADIUS_WASPADA_KM}km, "
-    f"status SIAGA jika masuk radius {RADIUS_SIAGA_KM}km. "
-    "Nilai ambang bersifat dapat dikalibrasi ulang sesuai validasi operasional."
+    f"Sel awan dengan suhu puncak ≤ {AMBANG_SEL_SIGNIFIKAN_C}°C dianggap signifikan."
 )
-
 st.divider()
+
 
 # =============================================================
 # FORMULIR: BUAT & PUBLIKASIKAN PERINGATAN
@@ -368,54 +348,48 @@ st.divider()
 st.markdown("### 📝 Early Warning System")
 st.markdown(f"**Location : {LOKASI_EWS}**")
 
+# TAMPILKAN NOTIFIKASI DAN TOMBOL DOWNLOAD PDF (Tepat di atas Form)
+if st.session_state.get("pesan_notif"):
+    if "gagal" in st.session_state["pesan_notif"].lower():
+        st.error(st.session_state["pesan_notif"])
+    else:
+        st.success(st.session_state["pesan_notif"])
+    st.session_state["pesan_notif"] = None # Reset agar tidak muncul terus
+
+if st.session_state.get("pdf_terakhir") and os.path.exists(st.session_state["pdf_terakhir"]):
+    with open(st.session_state["pdf_terakhir"], "rb") as f:
+        pdf_bytes = f.read()
+    st.download_button(
+        label="📄 Download PDF Peringatan Terakhir",
+        data=pdf_bytes,
+        file_name=os.path.basename(st.session_state["pdf_terakhir"]),
+        mime="application/pdf",
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+
+
 # =============================================================
-# DATA ANGIN AWS CENTER (Ketapang & Gilimanuk)
+# DATA ANGIN AWS CENTER
 # =============================================================
 ANGIN_AWS_JSON = os.path.join(LOCAL_DIR, "angin_aws_terkini.json")
 BATAS_BASI_ANGIN_MENIT = 20
 
 def muat_data_angin_aws():
-    if not os.path.exists(ANGIN_AWS_JSON):
-        return None
+    if not os.path.exists(ANGIN_AWS_JSON): return None
     try:
-        with open(ANGIN_AWS_JSON, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception:
-        return None
-
-    if data.get("kecepatan_maks_knot") is None:
-        return None
-
-    try:
-        waktu_ambil_dt = datetime.strptime(data["waktu_ambil"], "%Y-%m-%d %H:%M:%S")
-    except (KeyError, ValueError):
-        return None
-
-    if (datetime.now() - waktu_ambil_dt).total_seconds() / 60 > BATAS_BASI_ANGIN_MENIT:
-        return None 
-
+        with open(ANGIN_AWS_JSON, "r", encoding="utf-8") as f: data = json.load(f)
+    except Exception: return None
+    if data.get("kecepatan_maks_knot") is None: return None
+    try: waktu_ambil_dt = datetime.strptime(data["waktu_ambil"], "%Y-%m-%d %H:%M:%S")
+    except (KeyError, ValueError): return None
+    if (datetime.now() - waktu_ambil_dt).total_seconds() / 60 > BATAS_BASI_ANGIN_MENIT: return None 
     return data
 
 data_angin_aws = muat_data_angin_aws()
 
-# =============================================================
-# TEMPLATE DAMPAK CUACA PER LEVEL STATUS
-# =============================================================
 TEMPLATE_DAMPAK = {
-    "WASPADA": {
-        "intensitas_hujan": "ringan hingga sedang",
-        "sebut_petir": False,
-        "kecepatan_angin_kt_default": 15,
-        "tinggi_gelombang_m": 0.75,
-        "jarak_pandang_km": None,
-    },
-    "SIAGA": {
-        "intensitas_hujan": "sedang hingga lebat",
-        "sebut_petir": True,
-        "kecepatan_angin_kt_default": 20,
-        "tinggi_gelombang_m": 1.0,
-        "jarak_pandang_km": 4,
-    },
+    "WASPADA": { "intensitas_hujan": "ringan hingga sedang", "sebut_petir": False, "kecepatan_angin_kt_default": 15, "tinggi_gelombang_m": 0.75, "jarak_pandang_km": None },
+    "SIAGA": { "intensitas_hujan": "sedang hingga lebat", "sebut_petir": True, "kecepatan_angin_kt_default": 20, "tinggi_gelombang_m": 1.0, "jarak_pandang_km": 4 },
 }
 
 _valid_until_default_dt = datetime.now() + timedelta(hours=3)
@@ -430,18 +404,9 @@ if status_terbaru not in TEMPLATE_DAMPAK:
     )
 else:
     info = TEMPLATE_DAMPAK[status_terbaru]
-
-    if data_angin_aws:
-        kecepatan_angin_kt = data_angin_aws["kecepatan_maks_knot"]
-    else:
-        kecepatan_angin_kt = info["kecepatan_angin_kt_default"]
-
+    kecepatan_angin_kt = data_angin_aws["kecepatan_maks_knot"] if data_angin_aws else info["kecepatan_angin_kt_default"]
     bagian_petir = " disertai petir dan angin kencang" if info["sebut_petir"] else " disertai angin kencang"
-    bagian_jarak_pandang = (
-        f", beserta penurunan jarak pandang hingga kurang dari {info['jarak_pandang_km']} km"
-        if info["jarak_pandang_km"] else ""
-    )
-
+    bagian_jarak_pandang = f", beserta penurunan jarak pandang hingga kurang dari {info['jarak_pandang_km']} km" if info["jarak_pandang_km"] else ""
     narasi_saran = (
         f"Terdapat potensi perkembangan cuaca menjadi hujan dengan intensitas "
         f"{info['intensitas_hujan']}{bagian_petir} yang dapat mencapai "
@@ -450,39 +415,19 @@ else:
         f"Kondisi ini diperkirakan dapat berlaku hingga pukul {_valid_until_default_str} WIB."
     )
 
-# ---------------------------------------------------------
-# PANEL REFERENSI: DATA ANGIN AWS CENTER
-# ---------------------------------------------------------
 if data_angin_aws:
     detail = data_angin_aws.get("detail_per_stasiun", {})
-    baris_detail = []
-    for nama_stasiun, d in detail.items():
-        if d.get("kecepatan_maks_asli") is not None:
-            baris_detail.append(
-                f"{nama_stasiun}: {d['kecepatan_maks_asli']} {d['satuan_asli']} "
-                f"pukul {d['waktu_data_utc']} UTC"
-            )
-    st.info(
-        f"🌬️ **Data AWS Center (10 menit terakhir, diambil {data_angin_aws['waktu_ambil']}):** "
-        f"Maksimum **{data_angin_aws['kecepatan_maks_knot']} knot** dari stasiun "
-        f"**{data_angin_aws['stasiun_maks']}**. Detail: {'; '.join(baris_detail)}. "
-        "Silakan sesuaikan draft narasi di bawah berdasarkan data ini dan pertimbangan Anda."
-    )
+    baris_detail = [f"{nama}: {d['kecepatan_maks_asli']} {d['satuan_asli']} pukul {d['waktu_data_utc']} UTC" for nama, d in detail.items() if d.get("kecepatan_maks_asli")]
+    st.info(f"🌬️ **Data AWS Center (10 menit terakhir):** Maksimum **{data_angin_aws['kecepatan_maks_knot']} knot**. Detail: {'; '.join(baris_detail)}.")
 else:
-    st.warning(
-        "🌬️ Data angin AWS Center Ketapang/Gilimanuk belum tersedia atau sudah lebih dari "
-        f"{BATAS_BASI_ANGIN_MENIT} menit -- draft narasi memakai nilai default per level status. "
-        "Silakan sesuaikan kecepatan angin di narasi secara manual."
-    )
+    st.warning(f"🌬️ Data angin AWS Center belum tersedia atau usang (> {BATAS_BASI_ANGIN_MENIT} menit) -- draft narasi memakai nilai default.")
+
 
 with st.form("form_peringatan", clear_on_submit=False):
-
     st.text_input("Location", value=LOKASI_EWS, disabled=True)
-
     forecaster = st.text_input("Forecaster", placeholder="Nama forecaster yang bertanggung jawab")
 
     col_awal, col_akhir = st.columns(2)
-
     with col_awal:
         st.markdown("**Initial time**")
         tgl_awal = st.date_input("Tanggal mulai", value=datetime.now().date(), key="tgl_awal")
@@ -495,13 +440,10 @@ with st.form("form_peringatan", clear_on_submit=False):
 
     narasi = st.text_area(
         "Naration", value=narasi_saran, height=140,
-        key=f"narasi_input_{waktu_terbaru}_{data_angin_aws['kecepatan_maks_knot'] if data_angin_aws else 'default'}",
+        key=f"narasi_input_{waktu_terbaru}",
     )
 
-    konfirmasi = st.checkbox(
-        "I checked the satellite images and confirm the warning based on my expertise"
-    )
-
+    konfirmasi = st.checkbox("I checked the satellite images and confirm the warning based on my expertise")
     tombol_submit = st.form_submit_button("Submit and Publish", width="stretch")
 
     if tombol_submit:
@@ -509,13 +451,13 @@ with st.form("form_peringatan", clear_on_submit=False):
         valid_until_dt = datetime.combine(tgl_akhir, jam_akhir)
 
         if not forecaster.strip():
-            st.error("Kolom **Forecaster** wajib diisi sebelum publikasi.")
+            st.error("Kolom **Forecaster** wajib diisi.")
         elif not narasi.strip():
-            st.error("Kolom **Naration** wajib diisi sebelum publikasi.")
+            st.error("Kolom **Naration** wajib diisi.")
         elif valid_until_dt <= initial_time_dt:
             st.error("**Valid until** harus lebih lambat dari **Initial time**.")
         elif not konfirmasi:
-            st.error("Silakan centang konfirmasi terlebih dahulu sebelum publikasi.")
+            st.error("Silakan centang konfirmasi terlebih dahulu.")
         else:
             initial_time_fmt = initial_time_dt.strftime("%Y-%m-%d %H:%M")
             valid_until_fmt = valid_until_dt.strftime("%Y-%m-%d %H:%M")
@@ -530,14 +472,10 @@ with st.form("form_peringatan", clear_on_submit=False):
                 "dipublikasikan_pada": dipublikasikan_fmt,
             })
 
-            # -----------------------------------------------------
-            # BUAT PDF
-            # -----------------------------------------------------
             try:
                 os.makedirs(PDF_DIR, exist_ok=True)
                 nama_pdf = f"peringatan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
                 path_pdf = os.path.join(PDF_DIR, nama_pdf)
-
                 daftar_png_saat_ini = daftar_png_histori()
                 png_untuk_pdf = daftar_png_saat_ini[-1] if daftar_png_saat_ini else PNG_TERBARU
 
@@ -562,10 +500,9 @@ with st.form("form_peringatan", clear_on_submit=False):
                 )
 
                 st.session_state["pdf_terakhir"] = path_pdf
-                st.success("Peringatan berhasil dipublikasikan & PDF berhasil dibuat.")
-
+                st.session_state["pesan_notif"] = "✅ Peringatan berhasil dipublikasikan & PDF siap di-download!"
             except Exception as e:
                 st.session_state["pdf_terakhir"] = None
-                st.warning(f"Peringatan berhasil dipublikasikan, tapi PDF gagal dibuat: {e}")
+                st.session_state["pesan_notif"] = f"⚠️ Peringatan dipublikasikan, tapi PDF gagal dibuat: {e}"
 
             st.rerun()
