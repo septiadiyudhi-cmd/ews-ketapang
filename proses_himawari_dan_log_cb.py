@@ -131,7 +131,7 @@ def bersihkan_local_dir():
 # =============================================================
 def auto_ftp_download():
     print("\n=== KONEKSI FTP (SATELIT) ===")
-    ftp = FTP(FTP_HOST, timeout=600)
+    ftp = FTP(FTP_HOST, timeout=30)
     print("Koneksi host berhasil, mencari daftar file...")
     ftp.login(FTP_USER, FTP_PASS)
     ftp.set_pasv(True)
@@ -179,7 +179,7 @@ def auto_ftp_download():
                 "curl", "-u", f"{FTP_USER}:{FTP_PASS}",
                 "--ftp-pasv",
                 "--connect-timeout", "30",
-                "--max-time", "900",
+                "--max-time", "30",
                 url_ftp, "-o", local_path
             ], check=True)
             
