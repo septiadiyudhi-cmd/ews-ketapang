@@ -1,0 +1,40 @@
+[
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820102146,
+    "httpOnly": true,
+    "name": "cfz_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_engagementDuration%22%3A%7B%22v%22%3A%22732%22%2C%22e%22%3A1820102147861%7D%2C%220bd2_engagementStart%22%3A%7B%22v%22%3A%221788566147861%22%2C%22e%22%3A1820102147861%7D%2C%220bd2_counter%22%3A%7B%22v%22%3A%225%22%2C%22e%22%3A1820102147129%7D%2C%220bd2_ga4sid%22%3A%7B%22v%22%3A%221046494889%22%2C%22e%22%3A1788567947129%7D%2C%220bd2_session_counter%22%3A%7B%22v%22%3A%221%22%2C%22e%22%3A1820102147129%7D%2C%220bd2_ga4%22%3A%7B%22v%22%3A%22c72057ed-8f0e-40b0-b421-3e24302f74a3%22%2C%22e%22%3A1820102147129%7D%2C%220bd2__z_ga_audiences%22%3A%7B%22v%22%3A%22c72057ed-8f0e-40b0-b421-3e24302f74a3%22%2C%22e%22%3A1820102130275%7D%2C%220bd2_let%22%3A%7B%22v%22%3A%221788566147129%22%2C%22e%22%3A1820102147129%7D%7D"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "httpOnly": true,
+    "name": "cfzs_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_pageviewCounter%22%3A%7B%22v%22%3A%222%22%7D%2C%220bd2_conversionCounter%22%3A%7B%22v%22%3A%222%22%7D%7D"
+  },
+  {
+    "domain": "awscenter.bmkg.go.id",
+    "httpOnly": false,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "efgb5unosln60n1vtfht2brjst"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820102129,
+    "httpOnly": true,
+    "name": "cf_clearance",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "1qfVElP8PvpGpLQvKgDBdzj52XaHBjoJSqcT54RQyN0-1788566130-1.2.1.1-D.l2WmXCTbKtcUMZuVOEg1mC92tdXCDx7Ao9RcAblwNwTQXdwkVwwMXMEqIMGLGU5Y.QT1h0mcCbMHPhtPmF7e9LZZKZ5JqU44LN94PhyyPqEnbvyU.TA7svFPtkshvoJXsEf8dH.pMfSFUUgWe06ZbhsRcM34jJ1JL5ReHFBEyyZho3p.mXwp.S9.Col7ucVMSnN4YOfhsnz2k82mNjVkqd9LGE7_5bfTXNe.gaYV0bNSNoVpqstYYJ2gfoDMlCuvdvSMkUjgdyJ3wGLGk3r63Ih2JzaaY7dbBjAK7FEcPuL8HM.80aXqhh1gFM9X32CD15qX6oKhyhXDxTJJEZ1sZPlSTzT29E0De7Qb1vGJNtZleE6kuqiZ28M9AL4veWEs20jd4S2j_sP.nW2pqSfg"
+  }
+]
