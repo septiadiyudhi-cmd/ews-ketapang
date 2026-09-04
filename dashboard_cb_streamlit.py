@@ -164,7 +164,11 @@ if pd.notna(dbz_terbaru) and dbz_terbaru != "":
 # TAMPILAN DASHBOARD
 # =============================================================
 col_logo, col_judul = st.columns([1, 10])
-with col_logo: st.markdown("### 🌊")
+with col_logo: 
+    if os.path.exists("logo_bmkg.png"):
+        st.image("logo_bmkg.png", width=80)
+    else:
+        st.markdown("### 🌊")
 with col_judul:
     st.markdown("## EARLY WARNING SYSTEM - MULTI SENSOR (Satelit & Radar)")
     st.markdown("**Kantor Layanan Meteorologi Maritim Ketapang-Gilimanuk**")
