@@ -402,7 +402,7 @@ with tab_radar:
             st.warning("Animasi Radar Surabaya belum tersedia.")
 
     with col_r2:
-        st.markdown("#### Radar Denpasar (Gilimanuk)")
+        st.markdown("#### Radar Denpasar")
         if os.path.exists(GIF_RADAR_DPS):
             st.image(GIF_RADAR_DPS, width="stretch")
         else:
