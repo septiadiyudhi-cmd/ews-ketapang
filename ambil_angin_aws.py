@@ -12,7 +12,7 @@ bisa dibaca dashboard.
 Contoh struktur JSON asli per stasiun (dict tunggal, bukan list):
     {
       "nama_stasiun": "AWS Maritim Ketapang",
-      "tanggal": "31 Agustus 2026 01:26:00+00",   <- UTC, bulan Bahasa Indonesia
+      "tanggal": "31 Agustus 2026 01:26:00+00",  <- UTC, bulan Bahasa Indonesia
       "ws_avg": "4.1",
       "ws_max": "5.1",
       "wd_avg": "146",
@@ -47,9 +47,10 @@ LOCAL_DIR = "./Satelit"
 COOKIE_FILE = os.path.join(LOCAL_DIR, "aws_center_cookies.json")
 OUTPUT_JSON = os.path.join(LOCAL_DIR, "angin_aws_terkini.json")
 
+# URL Stasiun disembunyikan menggunakan variabel lingkungan
 STASIUN = {
-    "Gilimanuk": "https://awscenter.bmkg.go.id/monitoring/aws/STA2296/json",
-    "Ketapang": "https://awscenter.bmkg.go.id/monitoring/aws/STA2092/json",
+    "Gilimanuk": os.environ.get("AWS_GILIMANUK_URL", ""),
+    "Ketapang": os.environ.get("AWS_KETAPANG_URL", ""),
 }
 
 TIMEOUT_DETIK = 20
@@ -101,6 +102,9 @@ def buat_session_dengan_cookie():
 
 
 def ambil_json_stasiun(session, url):
+    if not url:
+        raise ValueError("URL stasiun kosong atau tidak ditemukan di environment variables.")
+    
     resp = session.get(url, timeout=TIMEOUT_DETIK)
     resp.raise_for_status()
 
