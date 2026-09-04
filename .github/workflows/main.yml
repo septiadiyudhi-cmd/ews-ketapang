@@ -20,6 +20,8 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           RADAR_API_URL: ${{ secrets.RADAR_API_URL }}
           RADAR_REFERER: ${{ secrets.RADAR_REFERER }}
+          AWS_GILIMANUK_URL: ${{ secrets.AWS_GILIMANUK_URL }}
+          AWS_KETAPANG_URL: ${{ secrets.AWS_KETAPANG_URL }}
         run: C:/Users/anaconda/python.exe -u proses_himawari_dan_log_cb.py
 
       - name: Simpan Data Baru ke GitHub
