@@ -22,7 +22,8 @@ import subprocess
 # KONFIGURASI FTP SATELIT
 # =============================================================
 print("Mulai mencoba koneksi ke FTP BMKG...")
-FTP_HOST = "202.90.199.64"
+# Alamat IP sekarang disembunyikan menggunakan GitHub Secrets (Environment Variable)
+FTP_HOST = os.environ.get("SERVER_IP")
 FTP_USER = os.environ.get("FTP_USER")
 FTP_PASS = os.environ.get("FTP_PASS")
 
