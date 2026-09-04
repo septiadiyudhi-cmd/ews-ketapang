@@ -179,7 +179,7 @@ def auto_ftp_download():
                 "curl", "-u", f"{FTP_USER}:{FTP_PASS}",
                 "--ftp-pasv",
                 "--connect-timeout", "30",
-                "--max-time", "30",
+                "--max-time", "900",
                 url_ftp, "-o", local_path
             ], check=True)
             
