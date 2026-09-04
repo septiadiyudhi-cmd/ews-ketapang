@@ -1,0 +1,40 @@
+[
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820081908,
+    "httpOnly": true,
+    "name": "cfz_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_engagementDuration%22%3A%7B%22v%22%3A%220%22%2C%22e%22%3A1820081909841%7D%2C%220bd2_engagementStart%22%3A%7B%22v%22%3A%221788545909841%22%2C%22e%22%3A1820081909841%7D%2C%220bd2_counter%22%3A%7B%22v%22%3A%225%22%2C%22e%22%3A1820081909841%7D%2C%220bd2_ga4sid%22%3A%7B%22v%22%3A%22792956695%22%2C%22e%22%3A1788547709841%7D%2C%220bd2_session_counter%22%3A%7B%22v%22%3A%221%22%2C%22e%22%3A1820081909841%7D%2C%220bd2_ga4%22%3A%7B%22v%22%3A%22d9ec51c7-e8ff-4bb5-9fa7-a3ea9f55fb4c%22%2C%22e%22%3A1820081909841%7D%2C%220bd2__z_ga_audiences%22%3A%7B%22v%22%3A%22d9ec51c7-e8ff-4bb5-9fa7-a3ea9f55fb4c%22%2C%22e%22%3A1820081884121%7D%2C%220bd2_let%22%3A%7B%22v%22%3A%221788545909841%22%2C%22e%22%3A1820081909841%7D%7D"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820081882,
+    "httpOnly": true,
+    "name": "cf_clearance",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "C68aW320.eoHyF1G5TJ9ncipWbm95qm9rpf0e0DUrts-1788545884-1.2.1.1-mIsf79EtcwvP.FOEknoAzOjMwp79ZQ8jtPFbfDetVlldnymffsUEBix1ri2dfYjrfbHpDokgrt5LTYXrpWDyY.eTUCJWDNPH0_uYz0AnP55UqjmagqiS4JFXDkyKZH3g8UtGpl1F7gQ2TxJDPrioSkbTW0LNp5sFNpv63.6itBK.TrRExscs9FeFO_zifxXoeGmiDHWwMSxfGYPY.9fH6Rm.WPlQijZiiqjvWUQan7_Y1fYeM2Bey_idpg6QocIeXUDaFA9F7jJgJgNrXhNX9_iZ3R3BviNiu.WJq2_x5Z8DMESu6xsDsMW_sOVwwD8oB3qMyjd_IwymY2BoUp6PENaGQZp6TwN07FQNVoFrUUYRBTT238EHzriM6.49mhN_e6PJhRyLm9iFPQQWh9SAmg"
+  },
+  {
+    "domain": "awscenter.bmkg.go.id",
+    "httpOnly": false,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "79ssqu2fspitlpiqb6k1lof8of"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "httpOnly": true,
+    "name": "cfzs_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_pageviewCounter%22%3A%7B%22v%22%3A%222%22%7D%2C%220bd2_conversionCounter%22%3A%7B%22v%22%3A%222%22%7D%7D"
+  }
+]
