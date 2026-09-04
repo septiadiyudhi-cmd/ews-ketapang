@@ -249,10 +249,12 @@ def buat_pdf_peringatan(
 
     tabel_info = Table(
         [[isi_kiri, isi_kanan]],
-        colWidths=[74 * mm, 105 * mm],
+        colWidths=[70 * mm, 100 * mm],
+        hAlign='LEFT'
     )
     tabel_info.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (0, -1), 0),
     ]))
 
     story.append(tabel_info)
