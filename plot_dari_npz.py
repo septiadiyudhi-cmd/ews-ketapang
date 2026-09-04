@@ -142,9 +142,9 @@ def gambar_dari_npz(npz_path):
     ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, color="white", alpha=0.65, linestyle=":", zorder=30)
 
     for lon_tick in [114.0, 114.3, 114.6, 114.9, 115.2, 115.5, 115.8]:
-        ax.text(lon_tick, -9.20 + 0.02, f"{lon_tick:.1f}\u00b0E", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="center", va="bottom", zorder=35)
+        ax.text(lon_tick, -9.20 + 0.02, f"{lon_tick:.1f}°E", transform=ccrs.PlateCarree(), color="red", fontweight="bold", fontsize=10, ha="center", va="bottom", zorder=35)
     for lat_tick in [-7.2, -7.5, -7.8, -8.1, -8.4, -8.7, -9.0]:
-        ax.text(113.70 + 0.02, lat_tick, f"{abs(lat_tick):.1f}\u00b0S", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="left", va="center", rotation=90, zorder=35)
+        ax.text(113.70 + 0.02, lat_tick, f"{abs(lat_tick):.1f}°S", transform=ccrs.PlateCarree(), color="red", fontweight="bold", fontsize=10, ha="left", va="center", rotation=90, zorder=35)
 
     # 4. PLOT LINGKARAN RADIUS & TARGET KETAPANG (Z-Order: 20-25)
     lon30, lat30 = buat_lingkaran_km(TARGET_LON, TARGET_LAT, RADIUS_WASPADA_KM)
