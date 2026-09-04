@@ -10,7 +10,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Tarik kode dari repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Jalankan Skrip Unduh & Proses
         env:
