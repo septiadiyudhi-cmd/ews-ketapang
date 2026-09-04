@@ -26,7 +26,7 @@ TARGET_LAT = -8.15
 RADIUS_RADAR_KM = 250.0 
 
 INFO_RADAR = {
-    "SURABAYA": {"lat": -7.230, "lon": 113.030},
+    "SURABAYA": {"lat": -7.530, "lon": 112.830},
     "DENPASAR": {"lat": -8.748, "lon": 115.167},
 }
 
