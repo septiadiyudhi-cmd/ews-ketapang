@@ -17,7 +17,7 @@ import cartopy.feature as cfeature
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.230, "lon": 113.030},
-    "DENPASAR": {"lat": -8.748, "lon": 115.767},
+    "DENPASAR": {"lat": -8.748, "lon": 115.177},
 }
 RADIUS_RADAR_KM = 250.0
 FIGSIZE = (8, 8)
