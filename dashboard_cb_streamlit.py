@@ -192,7 +192,7 @@ else:
 # =============================================================
 # TAMPILAN DASHBOARD GLOBAL (LOGO & HEADER)
 # =============================================================
-col_logo, col_judul = st.columns([1.5, 14])
+col_logo, col_judul = st.columns([1.5, 15])
 with col_logo: 
     if os.path.exists("logo_bmkg_2.png"):
         st.image("logo_bmkg_2.png", width=130)
