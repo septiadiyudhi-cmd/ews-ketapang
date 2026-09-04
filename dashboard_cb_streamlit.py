@@ -163,10 +163,10 @@ if pd.notna(dbz_terbaru) and dbz_terbaru != "":
 # =============================================================
 # TAMPILAN DASHBOARD
 # =============================================================
-col_logo, col_judul = st.columns([1, 10])
+col_logo, col_judul = st.columns([1.5, 10])  # Jatah kolom logo diperlebar (dari 1 menjadi 1.5)
 with col_logo: 
     if os.path.exists("logo_bmkg.png"):
-        st.image("logo_bmkg.png", width=80)
+        st.image("logo_bmkg.png", width=130) # Ukuran logo dibesarkan (misal dari 80 menjadi 130)
     else:
         st.markdown("### 🌊")
 with col_judul:
