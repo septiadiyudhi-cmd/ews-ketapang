@@ -401,7 +401,7 @@ TEMPLATE_DAMPAK = {
     "SIAGA": { "intensitas_hujan": "sedang hingga lebat", "sebut_petir": True, "kecepatan_angin_kt_default": 20, "tinggi_gelombang_m": 1.0, "jarak_pandang_km": 4 },
 }
 
-_valid_until_default_dt = datetime.now() + timedelta(hours=3)
+_valid_until_default_dt = datetime.now() + timedelta(hours=1)
 _valid_until_default_str = _valid_until_default_dt.strftime("%H:%M")
 
 # --- FORMAT TANGGAL INDONESIA ---
@@ -453,8 +453,8 @@ with st.form("form_peringatan", clear_on_submit=False):
 
     with col_akhir:
         st.markdown("**Valid until**")
-        tgl_akhir = st.date_input("Tanggal berakhir", value=(datetime.now() + timedelta(hours=3)).date(), key="tgl_akhir")
-        jam_akhir = st.time_input("Jam berakhir (WIB)", value=(datetime.now() + timedelta(hours=3)).time().replace(second=0, microsecond=0), key="jam_akhir")
+        tgl_akhir = st.date_input("Tanggal berakhir", value=(datetime.now() + timedelta(hours=1)).date(), key="tgl_akhir")
+        jam_akhir = st.time_input("Jam berakhir (WIB)", value=(datetime.now() + timedelta(hours=1)).time().replace(second=0, microsecond=0), key="jam_akhir")
 
     narasi = st.text_area(
         "Naration", value=narasi_saran, height=140,
