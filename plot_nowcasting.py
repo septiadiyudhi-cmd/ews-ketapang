@@ -77,8 +77,14 @@ def plot_prediksi(radar_nama):
 
         # Simpan dengan nama standar agar mudah dipanggil Streamlit
         file_output = os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_{menit_prediksi}.png")
-        plt.savefig(file_output, dpi=150, facecolor="#0e1117", bbox_inches="tight")
-        plt.close(fig)
+        
+        try:
+            plt.savefig(file_output, dpi=150, facecolor="#0e1117", bbox_inches="tight")
+            print(f"Tersimpan: {file_output}")
+        except Exception as e:
+            print(f"Peringatan: Gagal menyimpan {file_output} karena kendala jaringan peta ({e})")
+        finally:
+            plt.close(fig)
         print(f"Tersimpan: {file_output}")
 
 if __name__ == "__main__":
