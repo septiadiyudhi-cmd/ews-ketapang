@@ -354,6 +354,7 @@ def buat_semua_gif():
         raw_radar = [
             os.path.join(LOCAL_DIR, f) for f in os.listdir(LOCAL_DIR)
             if f.startswith(f"RADAR_{radar}_") and f.lower().endswith(".png")
+            and "PREDIKSI" not in f and "NOWCAST" not in f
         ]
         raw_radar = sorted(raw_radar)[-5:] # Ambil 5 frame terbaru
         
