@@ -113,7 +113,7 @@ def muat_log():
 
 def daftar_png_histori():
     semua_png = glob.glob(os.path.join(LOCAL_DIR, "*.png"))
-    hasil = [p for p in semua_png if os.path.basename(p) != "HIMAWARI_B13_TERBARU.png" and not os.path.basename(p).startswith("RADAR_") and not os.path.basename(p).startswith("MAP_")]
+    hasil = [p for p in semua_png if os.path.basename(p) != "HIMAWARI_B13_TERBARU.png" and not os.path.basename(p).startswith("RADAR_") and not os.path.basename(p).startswith("MAP_") and not "PREDIKSI" in p and not "NOWCAST" in p]
     return sorted(hasil)
 
 def muat_peringatan():
@@ -314,9 +314,9 @@ with tab_utama:
     with col_peta:
         st.markdown("#### 🗺️ Overlay Citra Satelit + Radar Cuaca (Animasi)")
         if os.path.exists(GIF_ANIMASI):
-            st.image(GIF_ANIMASI, width="stretch")
+            st.image(GIF_ANIMASI, use_container_width=True)
         elif os.path.exists(PNG_TERBARU):
-            st.image(PNG_TERBARU, width="stretch")
+            st.image(PNG_TERBARU, use_container_width=True)
         else:
             st.info("Belum ada citra satelit yang tersedia.")
             
@@ -330,7 +330,7 @@ with tab_utama:
                     value=nama_tampil[-1],
                 )
                 path_terpilih = daftar_png[nama_tampil.index(pilihan)]
-                st.image(path_terpilih, width="stretch")
+                st.image(path_terpilih, use_container_width=True)
 
     with col_kanan:
         st.markdown("#### 📊 Analisis Sel Konvektif Gabungan")
@@ -362,7 +362,7 @@ with tab_utama:
         fig.add_trace(go.Scatter(x=df_24jam["waktu_wib_dt"], y=df_24jam["suhu_min_20km"], mode="lines+markers", name="Suhu Min. 20km", line=dict(color="#ffcc00")))
         fig.add_hline(y=AMBANG_SEL_SIGNIFIKAN_C, line_dash="dash", line_color="#ff9900", annotation_text="Ambang Satelit")
         fig.update_layout(template="plotly_dark", height=300, margin=dict(l=10, r=10, t=30, b=10))
-        st.plotly_chart(fig, width="stretch")
+        st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
 
@@ -387,7 +387,7 @@ with tab_utama:
             "initial_speed_kmh": "Kecepatan Awal (km/h)",
             "file_sumber": "File Sumber",
         })
-    st.dataframe(df_tabel, width="stretch", height=350)
+    st.dataframe(df_tabel, use_container_width=True, height=350)
     st.caption(
         "Data diproses otomatis dari citra Himawari-9 kanal B13 tiap 10 menit. "
         f"Sel awan dengan suhu puncak ≤ {AMBANG_SEL_SIGNIFIKAN_C}°C dianggap signifikan."
@@ -395,26 +395,55 @@ with tab_utama:
 
 
 # =============================================================
-# TAB 2: ANIMASI RADAR
+# TAB 2: ANIMASI RADAR & NOWCASTING
 # =============================================================
 with tab_radar:
     st.markdown("### 📡 Animasi Radar Cuaca (CMAX)")
-    st.info("Peta Radar di bawah ini menampilkan pergerakan Precipitation Echo.")
+    st.info("Peta Radar di bawah ini menampilkan pergerakan Precipitation Echo masa lalu.")
     
     col_r1, col_r2 = st.columns(2)
     with col_r1:
         st.markdown("#### Radar Surabaya")
         if os.path.exists(GIF_RADAR_SBY):
-            st.image(GIF_RADAR_SBY, width="stretch")
+            st.image(GIF_RADAR_SBY, use_container_width=True)
         else:
             st.warning("Animasi Radar Surabaya belum tersedia.")
 
     with col_r2:
         st.markdown("#### Radar Denpasar")
         if os.path.exists(GIF_RADAR_DPS):
-            st.image(GIF_RADAR_DPS, width="stretch")
+            st.image(GIF_RADAR_DPS, use_container_width=True)
         else:
             st.warning("Animasi Radar Denpasar belum tersedia.")
+            
+    # --- FITUR NOWCASTING ---
+    st.markdown("---")
+    st.subheader("🔮 Nowcasting Radar (Prediksi 0-30 Menit ke Depan)")
+
+    pilihan_radar_nowcast = st.radio(
+        "Pilih Lokasi Radar untuk Prediksi:",
+        ("Surabaya", "Denpasar"),
+        horizontal=True
+    )
+
+    tab10, tab20, tab30 = st.tabs(["+10 Menit", "+20 Menit", "+30 Menit"])
+    radar_terpilih = pilihan_radar_nowcast.upper()
+
+    def tampilkan_gambar_prediksi(menit):
+        path_gambar = os.path.join(LOCAL_DIR, f"NOWCAST_FINAL_{radar_terpilih}_{menit}M.png")
+        if os.path.exists(path_gambar):
+            st.image(path_gambar, use_container_width=True)
+        else:
+            st.warning(f"Gambar prediksi +{menit} menit untuk {pilihan_radar_nowcast} belum tersedia. Sedang diproses oleh sistem.")
+
+    with tab10:
+        tampilkan_gambar_prediksi(10)
+        
+    with tab20:
+        tampilkan_gambar_prediksi(20)
+        
+    with tab30:
+        tampilkan_gambar_prediksi(30)
 
 
 # =============================================================
