@@ -10,3 +10,4 @@ numpy
 xarray
 netCDF4
 scipy
+opencv-python-headless
