@@ -154,10 +154,27 @@ def gambar_dari_npz(npz_path):
     ax.plot(lon15, lat15, color="magenta", linewidth=2, linestyle="--", transform=ccrs.PlateCarree(), zorder=21)
     ax.plot(TARGET_LON, TARGET_LAT, marker="s", markersize=4, markerfacecolor="magenta", markeredgecolor="white", transform=ccrs.PlateCarree(), zorder=22)
 
-    # Kosmetik Peta (Colorbar & Judul)
+    # 5A. Kosmetik Peta (Colorbar Satelit - Bagian Dalam)
     cbar = plt.colorbar(mesh, ax=ax, orientation="vertical", shrink=0.55, pad=0.035, ticks=TEMP_LEVELS)
-    cbar.set_label("Suhu Satelit (°C)", color="white", fontsize=13)
-    cbar.ax.tick_params(colors="white", labelsize=10)
+    cbar.set_label("Suhu Satelit (°C)", color="white", fontsize=11)
+    cbar.ax.tick_params(colors="white", labelsize=9)
+
+    # 5B. Kosmetik Peta (Colorbar Radar - Bagian Bawah Horizontal)
+    dbz_levels = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+    dbz_colors = [
+        "#00ecec", "#01a0f6", "#0000f6", "#00ff00", "#00c800", "#009000",
+        "#ffff00", "#e7c000", "#ff9000", "#ff0000", "#d60000", "#c00000", "#f800fd"
+    ]
+    cmap_dbz = mcolors.ListedColormap(dbz_colors)
+    norm_dbz = mcolors.BoundaryNorm(dbz_levels, cmap_dbz.N)
+    
+    sm_dbz = plt.cm.ScalarMappable(cmap=cmap_dbz, norm=norm_dbz)
+    sm_dbz.set_array([])
+    
+    # KUNCI PERUBAHAN: orientation="horizontal", shrink untuk mengatur panjang, pad untuk mengatur jarak dari gambar
+    cbar_dbz = plt.colorbar(sm_dbz, ax=ax, orientation="horizontal", shrink=0.7, pad=0.08, aspect=35)
+    cbar_dbz.set_label("Intensitas Radar (dBZ)", color="white", fontsize=11, labelpad=8)
+    cbar_dbz.ax.tick_params(colors="white", labelsize=9)
 
     waktu_judul = format_waktu_satellite(nama_file)
     ax.set_title(f"EWS Multi-Sensor (Satelit + Radar): {waktu_judul}", loc="left", fontsize=16, fontweight="bold", color="#fff8cf", pad=12)
