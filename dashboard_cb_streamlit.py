@@ -312,7 +312,7 @@ with tab_utama:
     col_peta, col_kanan = st.columns([1, 1])
 
     with col_peta:
-        st.markdown("#### 🗺️ Citra Satelit Enhanced IR (Animasi)")
+        st.markdown("#### 🗺️ Overlay Citra Satelit + Radar Cuaca (Animasi)")
         if os.path.exists(GIF_ANIMASI):
             st.image(GIF_ANIMASI, width="stretch")
         elif os.path.exists(PNG_TERBARU):
