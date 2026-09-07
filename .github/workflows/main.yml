@@ -24,6 +24,11 @@ jobs:
           AWS_KETAPANG_URL: ${{ secrets.AWS_KETAPANG_URL }}
         run: C:/Users/anaconda/python.exe -u proses_himawari_dan_log_cb.py
 
+      # --- BAGIAN BARU UNTUK MENJALANKAN NOWCASTING ---
+      - name: Jalankan Prediksi Nowcasting Radar
+        run: C:/Users/anaconda/python.exe -u nowcasting_radar.py
+      # -------------------------------------------------
+
       - name: Simpan Data Baru ke GitHub
         run: |
               git config --global user.name 'Robot EWS'
@@ -31,7 +36,7 @@ jobs:
               git add .
               if (git status --porcelain) {
                   git commit -m "Auto-update data EWS"
-                  git pull --rebase origin main  # <--- Tambahkan baris ini
+                  git pull --rebase origin main
                   git push
               } else {
                   echo "Tidak ada perubahan"
