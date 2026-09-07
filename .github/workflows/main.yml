@@ -27,6 +27,9 @@ jobs:
       # --- TAMBAHKAN STEP INSTALASI INI ---
       - name: Jalankan Prediksi Nowcasting Radar
         run: C:/Users/anaconda/python.exe -u nowcasting_radar.py
+        
+      - name: Gambar Peta Nowcasting
+        run: C:/Users/anaconda/python.exe -u plot_nowcasting.py
       # ------------------------------------
 
       - name: Simpan Data Baru ke GitHub
