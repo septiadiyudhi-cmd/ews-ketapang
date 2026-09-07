@@ -1,5 +1,4 @@
 waktu_utc,waktu_wib,file_sumber,suhu_min_15km,suhu_min_30km,status,arah_relatif,jumlah_sel_signifikan,luas_sel_terbesar_km2,jarak_terdekat_km,initial_heading_deg,initial_speed_kmh,cell_lat,cell_lon,suhu_min_10km,suhu_min_20km,dbz_maks_radar
-2026-08-27 21:40,2026-08-28 05:40,H09_B13_Indonesia_202608272140.nc,14.19,9.09,AMAN,-,0,,,,,,,,,
 2026-08-27 21:50,2026-08-28 05:50,H09_B13_Indonesia_202608272150.nc,14.47,8.94,AMAN,-,0,,,,,,,,,
 2026-08-27 22:00,2026-08-28 06:00,H09_B13_Indonesia_202608272200.nc,14.94,9.32,AMAN,-,0,,,,,,,,,
 2026-08-27 22:10,2026-08-28 06:10,H09_B13_Indonesia_202608272210.nc,14.96,9.23,AMAN,-,0,,,,,,,,,
@@ -287,3 +286,4 @@ waktu_utc,waktu_wib,file_sumber,suhu_min_15km,suhu_min_30km,status,arah_relatif,
 2026-09-07 13:00,2026-09-07 20:00,H09_B13_Indonesia_202609071300.nc,,,AMAN,-,0,,,,,,,16.03,13.49,
 2026-09-07 13:10,2026-09-07 20:10,H09_B13_Indonesia_202609071310.nc,,,AMAN,-,0,,,,,,,15.18,13.35,
 2026-09-07 13:20,2026-09-07 20:20,H09_B13_Indonesia_202609071320.nc,,,AMAN,-,0,,,,,,,14.11,12.96,
+2026-09-07 13:30,2026-09-07 20:30,H09_B13_Indonesia_202609071330.nc,,,AMAN,-,0,,,,,,,14.55,12.85,
