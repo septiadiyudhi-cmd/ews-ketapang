@@ -25,9 +25,6 @@ jobs:
         run: C:/Users/anaconda/python.exe -u proses_himawari_dan_log_cb.py
 
       # --- TAMBAHKAN STEP INSTALASI INI ---
-      - name: Install OpenCV di Komputer Lokal
-        run: C:/Users/anaconda/python.exe -m pip install opencv-python-headless
-      
       - name: Jalankan Prediksi Nowcasting Radar
         run: C:/Users/anaconda/python.exe -u nowcasting_radar.py
       # ------------------------------------
