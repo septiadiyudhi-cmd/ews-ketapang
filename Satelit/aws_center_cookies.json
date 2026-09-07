@@ -1,0 +1,40 @@
+[
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820320779,
+    "httpOnly": true,
+    "name": "cfz_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_engagementDuration%22%3A%7B%22v%22%3A%22835%22%2C%22e%22%3A1820320779880%7D%2C%220bd2_engagementStart%22%3A%7B%22v%22%3A%221788784779880%22%2C%22e%22%3A1820320779880%7D%2C%220bd2_counter%22%3A%7B%22v%22%3A%225%22%2C%22e%22%3A1820320779045%7D%2C%220bd2_ga4sid%22%3A%7B%22v%22%3A%22370623861%22%2C%22e%22%3A1788786579045%7D%2C%220bd2_session_counter%22%3A%7B%22v%22%3A%221%22%2C%22e%22%3A1820320779045%7D%2C%220bd2_ga4%22%3A%7B%22v%22%3A%22f0643e36-c998-475c-b6c6-a3392730593d%22%2C%22e%22%3A1820320779045%7D%2C%220bd2__z_ga_audiences%22%3A%7B%22v%22%3A%22f0643e36-c998-475c-b6c6-a3392730593d%22%2C%22e%22%3A1820320763135%7D%2C%220bd2_let%22%3A%7B%22v%22%3A%221788784779045%22%2C%22e%22%3A1820320779045%7D%7D"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "httpOnly": true,
+    "name": "cfzs_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_pageviewCounter%22%3A%7B%22v%22%3A%222%22%7D%2C%220bd2_conversionCounter%22%3A%7B%22v%22%3A%222%22%7D%7D"
+  },
+  {
+    "domain": "awscenter.bmkg.go.id",
+    "httpOnly": false,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "9qipopf8bp5qk1mbk2l3much49"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820320763,
+    "httpOnly": true,
+    "name": "cf_clearance",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "0Ev6QyMBOjA8.lee4bNRjX2KsVHDi5sYfDpoFwtuSBE-1788784763-1.2.1.1-W5hCTlFKMBU5ktkldKDt6Pfc3HaXo1aUI6vJL50uDNy.aFQ7iMep2NWgRrQX6T34.8F3TifsY2MAUzZFfm7ZnUixJFgeatqg4mXIvHG1EGVvrGio.ArATTOs9zSMQ.I67stCLlQRqzm9TfHYbhVbReuvRiLT4n7hy.gSMzhe1jYgpGiItrsoVXcd_WknIwg3auSbtPi5J0tMZVZval90.7aWaMf1D0XThR1WiALJn8GxS13OGlm75dAI63j2kj0OHRyV_Ie62r6IOUek9zxNlo9gtPsr.9A8LLlIRyPazOVnXrUAam2QKJyMRslaxbDbwqGydDPm8KlB44XXCg2MiY3dMHJmAxMYTWQbbZALx2w50c2uJasV60gVdKu0hdiHS9R7ydsemE_PSiXc2PUQBg"
+  }
+]
