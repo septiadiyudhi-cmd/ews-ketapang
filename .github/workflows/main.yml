@@ -30,6 +30,9 @@ jobs:
         
       - name: Gambar Peta Nowcasting
         run: C:/Users/anaconda/python.exe -u plot_nowcasting.py
+        
+      - name: Jalankan Prediksi Nowcasting Satelit
+        run: C:/Users/anaconda/python.exe -u nowcasting_satelit.py
       # ------------------------------------
 
       - name: Simpan Data Baru ke GitHub
