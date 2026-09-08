@@ -177,7 +177,7 @@ dbz_terbaru = baris_terbaru.get("dbz_maks_radar")
 # PEMICU ALARM SUARA
 if status_terbaru in ["WASPADA", "SIAGA"] and st.session_state["status_sebelumnya"] != status_terbaru:
     # Ganti dengan nama file MP3/WAV milikmu di folder yang sama
-    putar_suara("alarm_siaga.mp3") 
+    putar_suara("sirene.wav") 
     
 st.session_state["status_sebelumnya"] = status_terbaru
 
