@@ -1,0 +1,50 @@
+[
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820420395,
+    "httpOnly": true,
+    "name": "cf_zaraz_client",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": ""
+  },
+  {
+    "domain": "awscenter.bmkg.go.id",
+    "httpOnly": false,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "d3bi0vuagahpmi7kmcponhj671"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820420379,
+    "httpOnly": true,
+    "name": "cf_clearance",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "_jKg5xE4vIWM_xD432T_IUec_67ijDYtivNsd35KnGQ-1788884381-1.2.1.1-KuqBX47lg5y.b8vRKTB77ncWli608SAdQHACNRZSv81nip0azXkuEkmMlTD3_KSL7F0kOf.4jMADathiZhBcfHA1m0gNznCiDQuJE_CvgIoUMmNUTRwv4jv6v7ZgW78WZmgXbW.UDZ0.R4FDspbV43wFSKGyBbRy_DryOlzLaCBXwY2gs132n8LUDrWo0IyZ9x5qdmJdoO__GeufYh5Vz23mIxxWO4djaIw_LqAabIsQyi8neYgidqD82ujdq7_yfzuipJcQwdyW6NjnX.m6rGpyQ.raVTZzOZewHqcMpYQ6ngBq0dMsFZkZhmYePgfm6ZsQhXd7rCl88kYvvm42y9F.thjhX_4kufdmMqtIkcgEwOB1fY0vDVMJBBItgi66Bqp.djUIyflcmDL4KIx01g"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820420396,
+    "httpOnly": true,
+    "name": "cfz_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_engagementDuration%22%3A%7B%22v%22%3A%22741%22%2C%22e%22%3A1820420397884%7D%2C%220bd2_engagementStart%22%3A%7B%22v%22%3A%221788884397884%22%2C%22e%22%3A1820420397884%7D%2C%220bd2_counter%22%3A%7B%22v%22%3A%225%22%2C%22e%22%3A1820420397143%7D%2C%220bd2_ga4sid%22%3A%7B%22v%22%3A%221679614489%22%2C%22e%22%3A1788886197143%7D%2C%220bd2_session_counter%22%3A%7B%22v%22%3A%221%22%2C%22e%22%3A1820420397143%7D%2C%220bd2_ga4%22%3A%7B%22v%22%3A%221e14be2f-c8e3-4e02-8707-154700bd78e0%22%2C%22e%22%3A1820420397143%7D%2C%220bd2__z_ga_audiences%22%3A%7B%22v%22%3A%221e14be2f-c8e3-4e02-8707-154700bd78e0%22%2C%22e%22%3A1820420380956%7D%2C%220bd2_let%22%3A%7B%22v%22%3A%221788884397143%22%2C%22e%22%3A1820420397143%7D%7D"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "httpOnly": true,
+    "name": "cfzs_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_pageviewCounter%22%3A%7B%22v%22%3A%222%22%7D%2C%220bd2_conversionCounter%22%3A%7B%22v%22%3A%222%22%7D%7D"
+  }
+]
