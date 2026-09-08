@@ -18,7 +18,7 @@ import cartopy.io.img_tiles as cimgt
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.460, "lon": 112.730},
-    "DENPASAR": {"lat": -8.748, "lon": 115.177},
+    "DENPASAR": {"lat": -8.748, "lon": 115.187},
 }
 RADIUS_RADAR_KM = 250.0
 FIGSIZE = (8, 8)
