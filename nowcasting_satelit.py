@@ -88,7 +88,7 @@ def proses_nowcasting_satelit_npz():
                                    interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
         
         # Ukuran dan resolusi peta diperkecil (figsize 8x5, dpi 120)
-        fig = plt.figure(figsize=(8, 5), dpi=120, facecolor="#0e1117")
+        fig = plt.figure(figsize=(10, 6), dpi=150, facecolor="#0e1117")
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_facecolor("#0e1117")
         ax.set_extent([112.0, 116.0, -9.5, -6.5], crs=ccrs.PlateCarree())
