@@ -6,6 +6,7 @@ Penyeberangan Ketapang - Gilimanuk (Satelit + Radar)
 
 import os
 import time
+import base64
 
 # Paksa server menggunakan zona waktu WIB
 os.environ['TZ'] = 'Asia/Jakarta'
@@ -36,7 +37,6 @@ GIF_ANIMASI = os.path.join(LOCAL_DIR, "HIMAWARI_B13_ANIMASI.gif")
 GIF_RADAR_SBY = os.path.join(LOCAL_DIR, "RADAR_SURABAYA_ANIMASI.gif")
 GIF_RADAR_DPS = os.path.join(LOCAL_DIR, "RADAR_DENPASAR_ANIMASI.gif")
 
-# Penambahan Variabel GIF Nowcasting (Untuk Skrip Mendatang)
 GIF_NOWCAST_RADAR_SBY = os.path.join(LOCAL_DIR, "NOWCAST_RADAR_SURABAYA.gif")
 GIF_NOWCAST_RADAR_DPS = os.path.join(LOCAL_DIR, "NOWCAST_RADAR_DENPASAR.gif")
 GIF_NOWCAST_SATELIT = os.path.join(LOCAL_DIR, "NOWCAST_SATELIT_ANIMASI.gif")
@@ -70,25 +70,23 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# REFRESH OTOMATIS TIAP 10 MENIT
 st_autorefresh(interval=10 * 60 * 1000, key="ews_refresh")
 
-# Inisialisasi Session State
 if "pdf_terakhir" not in st.session_state:
     st.session_state["pdf_terakhir"] = None
 if "pesan_notif" not in st.session_state:
     st.session_state["pesan_notif"] = None
+if "status_sebelumnya" not in st.session_state:
+    st.session_state["status_sebelumnya"] = "AMAN"
 
 st.markdown(
     """
     <style>
     .stApp { background-color: #0e1117; }
-    /* Memperbesar ukuran teks pada Menu Tab */
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-        font-size: 50px;  /* Angka ini diperbesar */
-        font-weight: bold; /* Dibuat lebih tebal */
+        font-size: 50px;
+        font-weight: bold;
     }
-    /* Membatasi ukuran maksimal gambar statis/animasi secara umum */
     .img-fluid {
         max-width: 750px;
         width: 100%;
@@ -105,6 +103,20 @@ st.markdown(
 # =============================================================
 # FUNGSI BANTUAN
 # =============================================================
+def putar_suara(file_path):
+    try:
+        with open(file_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            md = f"""
+                <audio autoplay="true">
+                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+            """
+            st.markdown(md, unsafe_allow_html=True)
+    except Exception:
+        pass
+
 @st.cache_data(ttl=60)
 def muat_log():
     if not os.path.exists(LOG_CSV):
@@ -147,7 +159,7 @@ def simpan_peringatan(baris_baru: dict):
     df_gabung.to_csv(PERINGATAN_CSV, index=False)
 
 # =============================================================
-# MUAT DATA
+# MUAT DATA & LOGIKA SUARA
 # =============================================================
 df_log = muat_log()
 
@@ -162,11 +174,12 @@ suhu_10km_terbaru = baris_terbaru["suhu_min_10km"]
 suhu_20km_terbaru = baris_terbaru["suhu_min_20km"]
 dbz_terbaru = baris_terbaru.get("dbz_maks_radar")
 
-try:
-    selisih_menit = (datetime.now() - pd.to_datetime(waktu_terbaru)).total_seconds() / 60
-    data_basi = selisih_menit > 20
-except Exception:
-    data_basi = True
+# PEMICU ALARM SUARA
+if status_terbaru in ["WASPADA", "SIAGA"] and st.session_state["status_sebelumnya"] != status_terbaru:
+    # Ganti dengan nama file MP3/WAV milikmu di folder yang sama
+    putar_suara("alarm_siaga.mp3") 
+    
+st.session_state["status_sebelumnya"] = status_terbaru
 
 # =============================================================
 # KLASIFIKASI & NARASI KONDISI (Radar & Satelit)
@@ -187,7 +200,6 @@ if pd.notna(dbz_terbaru) and dbz_terbaru != "":
         kategori_radar, warna_radar = "Hujan Ringan (5-19 dBZ)", "#33cc66"
         teks_radar = "Terpantau tutupan awan hujan ringan (non-konvektif/lemah)."
 
-# Logika Narasi Satelit
 try:
     suhu_min_all = min(
         float(suhu_10km_terbaru) if pd.notna(suhu_10km_terbaru) else 999,
@@ -237,7 +249,6 @@ tab_utama, tab_radar, tab_nowcast, tab_pdf = st.tabs([
 # TAB 1: HALAMAN UTAMA
 # =============================================================
 with tab_utama:
-    # --- RINGKASAN STATUS KARTU ---
     col_status, col_suhu, col_radar = st.columns([2, 2, 3])
 
     with col_status:
@@ -290,7 +301,6 @@ with tab_utama:
 
     st.divider()
 
-    # --- PERINGATAN RESMI AKTIF ---
     df_peringatan = muat_peringatan()
     peringatan_aktif = None
 
@@ -323,7 +333,6 @@ with tab_utama:
 
     st.divider()
 
-    # --- CITRA & ANALISIS ---
     col_peta, col_kanan = st.columns([1, 1])
 
     with col_peta:
@@ -367,7 +376,6 @@ with tab_utama:
             st.metric("Arah Pergerakan", _fmt(heading, "°"))
             st.metric("Kecepatan Awal", _fmt(speed, "km/h"))
 
-        # Menambahkan jarak spasi ekstra
         st.markdown("<br><br><br>", unsafe_allow_html=True)
 
         st.markdown("#### 📈 Tren Suhu Puncak Awan (24 Jam Terakhir)")
@@ -381,7 +389,6 @@ with tab_utama:
 
     st.divider()
 
-    # --- TABEL RIWAYAT ---
     st.markdown("#### 📋 Riwayat Status (Terbaru di Atas)")
     df_tabel = df_log[[
             "waktu_wib", "suhu_min_10km", "suhu_min_20km", "dbz_maks_radar", "status",
@@ -410,7 +417,7 @@ with tab_utama:
 
 
 # =============================================================
-# TAB 2: ANIMASI RADAR (KINI MURNI OBSERVASI SAJA)
+# TAB 2: ANIMASI RADAR
 # =============================================================
 with tab_radar:
     st.markdown("### 📡 Animasi Radar Cuaca (CMAX)")
@@ -433,13 +440,12 @@ with tab_radar:
 
 
 # =============================================================
-# TAB 3: NOWCASTING (PREDIKSI SATELIT & RADAR)
+# TAB 3: NOWCASTING
 # =============================================================
 with tab_nowcast:
     st.markdown("### 🔮 Nowcasting (Prediksi Cuaca 1 Jam ke Depan)")
     st.info("Tab ini akan menampilkan animasi gabungan dari data cuaca saat ini yang diekstrapolasi hingga 1 Jam ke depan.")
     
-    # 1. Bagian Nowcasting Radar
     st.markdown("#### 1. Animasi Prediksi Radar Cuaca")
     col_nc_r1, col_nc_r2 = st.columns(2)
     with col_nc_r1:
@@ -458,11 +464,8 @@ with tab_nowcast:
 
     st.divider()
 
-    # 2. Bagian Nowcasting Satelit (TBA)
     st.markdown("#### 2. Animasi Prediksi Satelit Himawari-9")
     if os.path.exists(GIF_NOWCAST_SATELIT):
-        # PERUBAHAN: Gunakan HTML img tag dipadukan dengan kelas CSS img-fluid untuk membatasi ukuran
-        import base64
         with open(GIF_NOWCAST_SATELIT, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
             
@@ -475,13 +478,12 @@ with tab_nowcast:
 
 
 # =============================================================
-# TAB 4: PEMBUATAN PDF (FORMULIR PERINGATAN)
+# TAB 4: PEMBUATAN PDF
 # =============================================================
 with tab_pdf:
     st.markdown("### 📝 Form Early Warning System")
     st.markdown(f"**Lokasi : {LOKASI_EWS}**")
 
-    # --- NOTIFIKASI DAN TOMBOL DOWNLOAD ---
     if st.session_state.get("pesan_notif"):
         if "gagal" in st.session_state["pesan_notif"].lower():
             st.error(st.session_state["pesan_notif"])
@@ -500,7 +502,6 @@ with tab_pdf:
         )
         st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- DATA ANGIN AWS ---
     ANGIN_AWS_JSON = os.path.join(LOCAL_DIR, "angin_aws_terkini.json")
     BATAS_BASI_ANGIN_MENIT = 20
 
@@ -524,7 +525,6 @@ with tab_pdf:
     else:
         st.warning(f"🌬️ Data angin AWS Center belum tersedia atau usang (> {BATAS_BASI_ANGIN_MENIT} menit) -- draft narasi memakai nilai default.")
 
-    # --- LOGIKA NARASI OTOMATIS ---
     TEMPLATE_DAMPAK = {
         "WASPADA": { "intensitas_hujan": "ringan hingga sedang", "sebut_petir": False, "kecepatan_angin_kt_default": 15, "tinggi_gelombang_m": 0.75, "jarak_pandang_km": None },
         "SIAGA": { "intensitas_hujan": "sedang hingga lebat", "sebut_petir": True, "kecepatan_angin_kt_default": 20, "tinggi_gelombang_m": 1.0, "jarak_pandang_km": 4 },
@@ -533,7 +533,6 @@ with tab_pdf:
     _valid_until_default_dt = datetime.now() + timedelta(hours=1)
     _valid_until_default_str = _valid_until_default_dt.strftime("%H:%M")
 
-    # Format Tanggal Indonesia
     try:
         w_dt = datetime.strptime(waktu_terbaru, "%Y-%m-%d %H:%M")
         bln = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
@@ -561,7 +560,6 @@ with tab_pdf:
             f"Kondisi ini diperkirakan dapat berlaku hingga pukul {_valid_until_default_str} WIB."
         )
 
-    # --- FORMULIR ---
     with st.form("form_peringatan", clear_on_submit=False):
         st.text_input("Location", value=LOKASI_EWS, disabled=True)
         forecaster = st.text_input("Forecaster", placeholder="Nama forecaster yang bertanggung jawab")
