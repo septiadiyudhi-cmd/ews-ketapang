@@ -97,9 +97,9 @@ def buat_gif_nowcast(radar_nama):
             # Frame terakhir (prediksi +30M) ditahan lebih lama
             durations = [700] * (len(images) - 1) + [2000]
             images[0].save(output_gif, save_all=True, append_images=images[1:], duration=durations, loop=0, optimize=True)
-            print(f"✅ Animasi Nowcast Selesai: {output_gif}")
+            print(f"[OK] Animasi Nowcast Selesai: {output_gif}")
         except Exception as e:
-            print(f"❌ Gagal merajut GIF: {e}")
+            print(f"[GAGAL] Gagal merajut GIF: {e}")
 
 if __name__ == "__main__":
     plot_prediksi("SURABAYA")
