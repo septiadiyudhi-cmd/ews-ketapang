@@ -36,6 +36,11 @@ GIF_ANIMASI = os.path.join(LOCAL_DIR, "HIMAWARI_B13_ANIMASI.gif")
 GIF_RADAR_SBY = os.path.join(LOCAL_DIR, "RADAR_SURABAYA_ANIMASI.gif")
 GIF_RADAR_DPS = os.path.join(LOCAL_DIR, "RADAR_DENPASAR_ANIMASI.gif")
 
+# Penambahan Variabel GIF Nowcasting (Untuk Skrip Mendatang)
+GIF_NOWCAST_RADAR_SBY = os.path.join(LOCAL_DIR, "NOWCAST_RADAR_SURABAYA.gif")
+GIF_NOWCAST_RADAR_DPS = os.path.join(LOCAL_DIR, "NOWCAST_RADAR_DENPASAR.gif")
+GIF_NOWCAST_SATELIT = os.path.join(LOCAL_DIR, "NOWCAST_SATELIT_ANIMASI.gif")
+
 AMBANG_SEL_SIGNIFIKAN_C = -34.0
 LUAS_MIN_SEL_KM2 = 10.0
 RADIUS_SIAGA_KM = 10
@@ -212,9 +217,10 @@ st.divider()
 # =============================================================
 # MEMBUAT MENU TAB NAVIGASI
 # =============================================================
-tab_utama, tab_radar, tab_pdf = st.tabs([
+tab_utama, tab_radar, tab_nowcast, tab_pdf = st.tabs([
     "🏠 Halaman Utama", 
-    "📡 Animasi Radar", 
+    "📡 Animasi Radar",
+    "🔮 Nowcasting",
     "📝 Pembuatan PDF"
 ])
 
@@ -395,11 +401,11 @@ with tab_utama:
 
 
 # =============================================================
-# TAB 2: ANIMASI RADAR & NOWCASTING
+# TAB 2: ANIMASI RADAR (KINI MURNI OBSERVASI SAJA)
 # =============================================================
 with tab_radar:
     st.markdown("### 📡 Animasi Radar Cuaca (CMAX)")
-    st.info("Peta Radar di bawah ini menampilkan pergerakan Precipitation Echo masa lalu.")
+    st.info("Peta Radar di bawah ini murni menampilkan data observasi pergerakan Precipitation Echo di masa lalu.")
     
     col_r1, col_r2 = st.columns(2)
     with col_r1:
@@ -415,39 +421,44 @@ with tab_radar:
             st.image(GIF_RADAR_DPS, use_container_width=True)
         else:
             st.warning("Animasi Radar Denpasar belum tersedia.")
-            
-    # --- FITUR NOWCASTING ---
-    st.markdown("---")
-    st.subheader("🔮 Nowcasting Radar (Prediksi 0-30 Menit ke Depan)")
-
-    pilihan_radar_nowcast = st.radio(
-        "Pilih Lokasi Radar untuk Prediksi:",
-        ("Surabaya", "Denpasar"),
-        horizontal=True
-    )
-
-    tab10, tab20, tab30 = st.tabs(["+10 Menit", "+20 Menit", "+30 Menit"])
-    radar_terpilih = pilihan_radar_nowcast.upper()
-
-    def tampilkan_gambar_prediksi(menit):
-        path_gambar = os.path.join(LOCAL_DIR, f"NOWCAST_FINAL_{radar_terpilih}_{menit}M.png")
-        if os.path.exists(path_gambar):
-            st.image(path_gambar, use_container_width=True)
-        else:
-            st.warning(f"Gambar prediksi +{menit} menit untuk {pilihan_radar_nowcast} belum tersedia. Sedang diproses oleh sistem.")
-
-    with tab10:
-        tampilkan_gambar_prediksi(10)
-        
-    with tab20:
-        tampilkan_gambar_prediksi(20)
-        
-    with tab30:
-        tampilkan_gambar_prediksi(30)
 
 
 # =============================================================
-# TAB 3: PEMBUATAN PDF (FORMULIR PERINGATAN)
+# TAB 3: NOWCASTING (PREDIKSI SATELIT & RADAR)
+# =============================================================
+with tab_nowcast:
+    st.markdown("### 🔮 Nowcasting (Prediksi Cuaca 0-30 Menit ke Depan)")
+    st.info("Tab ini akan menampilkan animasi gabungan dari data cuaca saat ini yang diekstrapolasi hingga 30 menit ke depan.")
+    
+    # 1. Bagian Nowcasting Radar
+    st.markdown("#### 1. Animasi Prediksi Radar Cuaca")
+    col_nc_r1, col_nc_r2 = st.columns(2)
+    with col_nc_r1:
+        st.markdown("**Prediksi Radar Surabaya**")
+        if os.path.exists(GIF_NOWCAST_RADAR_SBY):
+            st.image(GIF_NOWCAST_RADAR_SBY, use_container_width=True)
+        else:
+            st.warning("Animasi Nowcasting Radar Surabaya sedang dipersiapkan oleh sistem...")
+            
+    with col_nc_r2:
+        st.markdown("**Prediksi Radar Denpasar**")
+        if os.path.exists(GIF_NOWCAST_RADAR_DPS):
+            st.image(GIF_NOWCAST_RADAR_DPS, use_container_width=True)
+        else:
+            st.warning("Animasi Nowcasting Radar Denpasar sedang dipersiapkan oleh sistem...")
+
+    st.divider()
+
+    # 2. Bagian Nowcasting Satelit (TBA)
+    st.markdown("#### 2. Animasi Prediksi Satelit Himawari-9")
+    if os.path.exists(GIF_NOWCAST_SATELIT):
+        st.image(GIF_NOWCAST_SATELIT, use_container_width=True)
+    else:
+        st.warning("Animasi Nowcasting Satelit Himawari-9 belum tersedia. Menunggu integrasi skrip backend baru.")
+
+
+# =============================================================
+# TAB 4: PEMBUATAN PDF (FORMULIR PERINGATAN)
 # =============================================================
 with tab_pdf:
     st.markdown("### 📝 Form Early Warning System")
