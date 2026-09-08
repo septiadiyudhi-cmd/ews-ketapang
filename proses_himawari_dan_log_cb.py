@@ -92,20 +92,20 @@ def cari_remote_dir(ftp):
     return None
 
 def bersihkan_local_dir():
-    # 1. Hapus NetCDF dan PNG Satelit (Abaikan Radar)
+    # 1. Hapus NetCDF dan PNG yang sudah usang
     for nama_file in os.listdir(LOCAL_DIR):
         if nama_file.lower().endswith(".nc"):
             try:
                 os.remove(os.path.join(LOCAL_DIR, nama_file))
             except Exception: pass
         elif nama_file.lower().endswith(".png"):
-            # Jika itu file radar, lewati (jangan dihapus)
-            if not nama_file.startswith("RADAR_") and not nama_file.startswith("MAP_"):
+            # PERBAIKAN: Hapus bersih semua file prediksi/nowcast dari siklus jam sebelumnya agar tidak menumpuk
+            if (not nama_file.startswith("RADAR_") and not nama_file.startswith("MAP_")) or "PREDIKSI" in nama_file or "NOWCAST" in nama_file:
                 try:
                     os.remove(os.path.join(LOCAL_DIR, nama_file))
                 except Exception: pass
 
-    # 2. Hapus Cache Data
+    # 2. Hapus Cache Data Satelit
     if os.path.isdir(CACHE_DIR):
         for nama_file in os.listdir(CACHE_DIR):
             if nama_file.lower().endswith(".npz"):
@@ -113,18 +113,22 @@ def bersihkan_local_dir():
                     os.remove(os.path.join(CACHE_DIR, nama_file))
                 except Exception: pass
 
-    # 3. MANAJEMEN ARSIP RADAR (Cegah hardisk penuh)
-    # Kita hanya menyimpan 10 file radar/map terbaru untuk setiap jenis
+    # 3. MANAJEMEN ARSIP RADAR (Murni Data Observasi Asli)
     jenis_radar = ["RADAR_SURABAYA_", "RADAR_DENPASAR_", "MAP_RADAR_SURABAYA_", "MAP_RADAR_DENPASAR_"]
     for prefix in jenis_radar:
-        daftar_file = sorted([f for f in os.listdir(LOCAL_DIR) if f.startswith(prefix) and f.lower().endswith(".png")])
-        if len(daftar_file) > 5:
-            for file_usang in daftar_file[:-5]: # Hapus sisanya, tinggalkan 10 terbaru
+        daftar_file = sorted([
+            f for f in os.listdir(LOCAL_DIR) 
+            if f.startswith(prefix) and f.lower().endswith(".png") and "PREDIKSI" not in f
+        ])
+        
+        # PERBAIKAN: Naikkan batas simpanan histori observasi dari 5 menjadi 10 file
+        if len(daftar_file) > 10:
+            for file_usang in daftar_file[:-10]:
                 try:
                     os.remove(os.path.join(LOCAL_DIR, file_usang))
                 except Exception: pass
 
-    print("File lama dibersihkan. Histori radar dipertahankan (maks 10 file).")
+    print("File lama dibersihkan. Histori observasi dipertahankan (maks 10 file), dan prediksi usang dihapus.")
 
 # =============================================================
 # DOWNLOAD FTP (SATELIT)
