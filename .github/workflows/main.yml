@@ -34,13 +34,13 @@ jobs:
 
       - name: Simpan Data Baru ke GitHub
         run: |
-              git config --global user.name 'Robot EWS'
-              git config --global user.email 'robot@bmkg.go.id'
-              git add .
-              if (git status --porcelain) {
-                  git commit -m "Auto-update data EWS"
-                  git pull --rebase origin main
-                  git push
-              } else {
-                  echo "Tidak ada perubahan"
-              }
+          git config --global user.name 'Robot EWS'
+          git config --global user.email 'robot@bmkg.go.id'
+          git add .
+          if (git status --porcelain) {
+              git commit -m "Auto-update data EWS"
+              git pull --rebase -X ours origin main
+              git push
+          } else {
+              echo "Tidak ada perubahan"
+          }
