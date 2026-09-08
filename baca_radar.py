@@ -27,7 +27,7 @@ RADIUS_RADAR_KM = 250.0
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.460, "lon": 112.730},
-    "DENPASAR": {"lat": -8.748, "lon": 115.167},
+    "DENPASAR": {"lat": -8.748, "lon": 115.187},
 }
 
 TOLERANSI_WAKTU_MENIT = 30
