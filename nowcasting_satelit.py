@@ -41,20 +41,18 @@ def proses_nowcasting_satelit_npz():
         npz_prev = np.load(file_sebelumnya)
         npz_curr = np.load(file_terbaru)
         
-        # Mengecek label apa saja yang ada di dalam file .npz
-        kunci = npz_curr.files
-        print(f"Label yang tersedia di dalam .npz: {kunci}")
+        # Ekstrak data menggunakan label yang tepat dari file .npz
+        data_prev = npz_prev['data_values']
+        data_curr = npz_curr['data_values']
+        lons = npz_curr['lon']
+        lats = npz_curr['lat']
         
-        # Deteksi otomatis label untuk data, bujur (lon), dan lintang (lat)
-        kunci_data = "data" if "data" in kunci else ("suhu" if "suhu" in kunci else kunci[0])
-        kunci_lon = "lons" if "lons" in kunci else ("lon" if "lon" in kunci else kunci[1])
-        kunci_lat = "lats" if "lats" in kunci else ("lat" if "lat" in kunci else kunci[2])
-        
-        data_prev = npz_prev[kunci_data]
-        data_curr = npz_curr[kunci_data]
-        lons = npz_curr[kunci_lon]
-        lats = npz_curr[kunci_lat]
-        
+        # Jaring pengaman: Jika data_values disimpan sebagai array 1 Dimensi memanjang,
+        # kita harus merakitnya kembali menjadi matriks 2D (Tinggi x Lebar)
+        if len(data_curr.shape) == 1:
+            data_prev = data_prev.reshape((len(lats), len(lons)))
+            data_curr = data_curr.reshape((len(lats), len(lons)))
+            
     except Exception as e:
         print(f"Gagal memuat data .npz: {e}")
         return
