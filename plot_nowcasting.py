@@ -104,7 +104,10 @@ def buat_gif_nowcast(radar_nama):
     frame_prediksi = [
         os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_10M.png"),
         os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_20M.png"),
-        os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_30M.png")
+        os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_30M.png"),
+        os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_40M.png"),
+        os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_50M.png"),
+        os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_60M.png")
     ]
     
     frames_valid = frame_awal + [f for f in frame_prediksi if os.path.exists(f)]
