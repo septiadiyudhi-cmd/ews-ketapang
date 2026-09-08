@@ -1,21 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep  7 20:28:43 2026
-
-@author: Asus
-"""
-
-# -*- coding: utf-8 -*-
-"""
 NOWCASTING RADAR DENGAN OPTICAL FLOW (OPENCV)
-Memprediksi pergerakan gema radar 10, 20, dan 30 menit ke depan
+Memprediksi pergerakan gema radar hingga 60 menit ke depan
 """
 
 import cv2
 import numpy as np
 import glob
 import os
-import sys
 
 DIR_SATELIT = "./Satelit"
 
@@ -46,7 +38,6 @@ def prediksi_pergerakan_radar(radar_nama):
     gray_curr = cv2.cvtColor(img_curr, cv2.COLOR_BGRA2GRAY)
 
     # 4. Hitung Optical Flow (Farneback Algorithm)
-    # Mesin akan mencari tahu piksel di gray_prev bergeser ke mana di gray_curr
     flow = cv2.calcOpticalFlowFarneback(gray_prev, gray_curr, None, 
                                         pyr_scale=0.5, levels=3, winsize=15, 
                                         iterations=3, poly_n=5, poly_sigma=1.2, flags=0)
@@ -59,7 +50,6 @@ def prediksi_pergerakan_radar(radar_nama):
         map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
         
         # Tambahkan vektor pergerakan ke grid (dikalikan skala waktu)
-        # Jika step=1 (10 menit), jika step=2 (20 menit)
         map_x = map_x - (vektor_flow[..., 0] * skala_waktu)
         map_y = map_y - (vektor_flow[..., 1] * skala_waktu)
         
@@ -68,25 +58,16 @@ def prediksi_pergerakan_radar(radar_nama):
                                       interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_TRANSPARENT)
         return gambar_masa_depan
 
-    # 6. Buat Prediksi (Asumsi jarak file 1 dan 2 adalah 10 menit)
+    # 6. Buat Prediksi (Looping 1 hingga 6 untuk 10 hingga 60 menit)
     nama_dasar = os.path.basename(file_terbaru).replace(".png", "")
     
-    # Prediksi +10 Menit (Step = 1)
-    img_pred_10 = geser_gambar(img_curr, flow, skala_waktu=1)
-    file_10m = os.path.join(DIR_SATELIT, f"{nama_dasar}_PREDIKSI_10M.png")
-    cv2.imwrite(file_10m, img_pred_10)
+    for step in range(1, 7):
+        menit = step * 10
+        img_pred = geser_gambar(img_curr, flow, skala_waktu=step)
+        file_pred = os.path.join(DIR_SATELIT, f"{nama_dasar}_PREDIKSI_{menit}M.png")
+        cv2.imwrite(file_pred, img_pred)
     
-    # Prediksi +20 Menit (Step = 2)
-    img_pred_20 = geser_gambar(img_curr, flow, skala_waktu=2)
-    file_20m = os.path.join(DIR_SATELIT, f"{nama_dasar}_PREDIKSI_20M.png")
-    cv2.imwrite(file_20m, img_pred_20)
-    
-    # Prediksi +30 Menit (Step = 3)
-    img_pred_30 = geser_gambar(img_curr, flow, skala_waktu=3)
-    file_30m = os.path.join(DIR_SATELIT, f"{nama_dasar}_PREDIKSI_30M.png")
-    cv2.imwrite(file_30m, img_pred_30)
-    
-    print(f"Berhasil membuat prediksi nowcasting 10, 20, 30 menit ke depan untuk {radar_nama}!")
+    print(f"Berhasil membuat prediksi nowcasting 10 hingga 60 menit ke depan untuk {radar_nama}!")
 
 if __name__ == "__main__":
     prediksi_pergerakan_radar("DENPASAR")
