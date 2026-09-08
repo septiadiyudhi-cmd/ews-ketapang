@@ -427,8 +427,8 @@ with tab_radar:
 # TAB 3: NOWCASTING (PREDIKSI SATELIT & RADAR)
 # =============================================================
 with tab_nowcast:
-    st.markdown("### 🔮 Nowcasting (Prediksi Cuaca 0-30 Menit ke Depan)")
-    st.info("Tab ini akan menampilkan animasi gabungan dari data cuaca saat ini yang diekstrapolasi hingga 30 menit ke depan.")
+    st.markdown("### 🔮 Nowcasting (Prediksi Cuaca 1 Jam ke Depan)")
+    st.info("Tab ini akan menampilkan animasi gabungan dari data cuaca saat ini yang diekstrapolasi hingga 1 Jam ke depan.")
     
     # 1. Bagian Nowcasting Radar
     st.markdown("#### 1. Animasi Prediksi Radar Cuaca")
