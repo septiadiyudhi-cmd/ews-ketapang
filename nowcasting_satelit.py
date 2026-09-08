@@ -50,17 +50,25 @@ def proses_nowcasting_satelit_npz():
         print(f"Gagal memuat data .npz: {e}")
         return
 
+    # Normalisasi data suhu ke format 8-bit dengan Gaussian Blur untuk membuang noise (titik liar)
     def skala_ke_8bit(data_suhu):
         data_clip = np.clip(data_suhu, -80, 40)
         data_8bit = ((40 - data_clip) / 120 * 255).astype(np.uint8)
-        return data_8bit
+        # Efek blur agar gradien awan satelit lebih halus saat dibaca mesin
+        data_blur = cv2.GaussianBlur(data_8bit, (5, 5), 0)
+        return data_blur
 
     gray_prev = skala_ke_8bit(data_prev)
     gray_curr = skala_ke_8bit(data_curr)
 
+    # Perhitungan Optical Flow (Disetel khusus untuk awan satelit)
     flow = cv2.calcOpticalFlowFarneback(gray_prev, gray_curr, None, 
-                                        pyr_scale=0.5, levels=3, winsize=15, 
-                                        iterations=3, poly_n=5, poly_sigma=1.2, flags=0)
+                                        pyr_scale=0.5, levels=3, winsize=31, 
+                                        iterations=3, poly_n=7, poly_sigma=1.5, flags=0)
+                                        
+    # Median Filter untuk merapikan arah angin (mencegah efek garis melar)
+    flow[..., 0] = cv2.medianBlur(flow[..., 0], 5)
+    flow[..., 1] = cv2.medianBlur(flow[..., 1], 5)
 
     nama_file = os.path.basename(file_terbaru)
     waktu_str = nama_file.split("_")[-1].replace(".npz", "")
@@ -100,8 +108,6 @@ def proses_nowcasting_satelit_npz():
         
         mesh = ax.pcolormesh(lons, lats, data_mask, transform=ccrs.PlateCarree(),
                              cmap='nipy_spectral_r', vmin=-80, vmax=20, zorder=2, shading='auto')
-        
-        # Bintang dan Teks Ketapang telah dihapus dari blok ini
         
         judul_tambahan = "(Aktual)" if step == 0 else "(Prediksi)"
         ax.set_title(f"Satelit Himawari-9 (Suhu Puncak Awan) {judul_tambahan}\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
