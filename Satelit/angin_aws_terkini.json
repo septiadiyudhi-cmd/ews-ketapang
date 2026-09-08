@@ -1,20 +1,23 @@
 {
-  "waktu_ambil": "2026-09-08 20:57:54",
-  "kecepatan_maks_knot": 10.5,
-  "stasiun_maks": "Gilimanuk",
+  "waktu_ambil": "2026-09-08 21:33:06",
+  "kecepatan_maks_knot": null,
+  "stasiun_maks": null,
   "detail_per_stasiun": {
     "Gilimanuk": {
-      "kecepatan_maks_asli": 5.4,
+      "kecepatan_maks_asli": null,
       "satuan_asli": "ms",
-      "waktu_data_utc": "2026-09-08 19:51:00",
-      "nama_lengkap": "AWS Maritim Gilimanuk"
+      "waktu_data_utc": null,
+      "nama_lengkap": null
     },
     "Ketapang": {
-      "kecepatan_maks_asli": 3.5,
+      "kecepatan_maks_asli": null,
       "satuan_asli": "ms",
-      "waktu_data_utc": "2026-09-08 19:51:00",
-      "nama_lengkap": "AWS Maritim Ketapang"
+      "waktu_data_utc": null,
+      "nama_lengkap": null
     }
   },
-  "error": []
+  "error": [
+    "Gilimanuk: Respons bukan JSON -- sesi login kemungkinan sudah kadaluarsa. Jalankan ulang login_aws_dan_simpan_cookie.py.",
+    "Ketapang: Respons bukan JSON -- sesi login kemungkinan sudah kadaluarsa. Jalankan ulang login_aws_dan_simpan_cookie.py."
+  ]
 }
