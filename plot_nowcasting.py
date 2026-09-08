@@ -10,6 +10,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cartopy.io.img_tiles as cimgt
 from PIL import Image
+from datetime import datetime, timedelta
 
 INFO_RADAR = {
     "SURABAYA": {"lat": -7.460, "lon": 112.730},
@@ -26,7 +27,25 @@ def plot_prediksi(radar_nama):
     file_prediksi = glob.glob(pola)
     
     for file_input in file_prediksi:
-        menit_prediksi = file_input.split("_")[-1].replace(".png", "")
+        # Membongkar nama file untuk mendapatkan waktu asli dan menit prediksi
+        nama_dasar = os.path.basename(file_input)
+        bagian = nama_dasar.split("_")
+        
+        try:
+            # Ambil menit prediksi (misal: "20M.png" -> 20)
+            menit_str = bagian[-1].replace("M.png", "")
+            menit_prediksi = int(menit_str)
+            
+            # Ambil waktu asli (misal: "20260907" dan "1419")
+            waktu_str = f"{bagian[-4]}_{bagian[-3]}"
+            waktu_awal = datetime.strptime(waktu_str, "%Y%m%d_%H%M")
+            
+            # Hitung waktu prediksi
+            waktu_berlaku = waktu_awal + timedelta(minutes=menit_prediksi)
+            teks_waktu = waktu_berlaku.strftime("%Y-%m-%d %H:%M UTC")
+        except Exception as e:
+            # Fallback jika nama file tidak terduga
+            teks_waktu = f"+{menit_prediksi} Menit"
         
         tiler = cimgt.QuadtreeTiles()
         fig = plt.figure(figsize=(8, 8), dpi=150, facecolor="#0e1117")
@@ -51,7 +70,8 @@ def plot_prediksi(radar_nama):
         ax.imshow(img_radar, extent=extent_radar, transform=ccrs.PlateCarree(), origin='upper', zorder=10)
         ax.plot(info["lon"], info["lat"], marker="^", color="red", markersize=8, transform=ccrs.PlateCarree(), zorder=15)
         
-        ax.set_title(f"Prediksi Hujan {radar_nama.capitalize()} (+{menit_prediksi})", color="#ffcc00", fontweight="bold", pad=10)
+        # Mengubah judul menjadi waktu aktual
+        ax.set_title(f"Prediksi Radar {radar_nama.capitalize()} - Berlaku: {teks_waktu}", color="#ffcc00", fontweight="bold", pad=10)
 
         dbz_levels = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
         dbz_colors = ["#00ecec", "#01a0f6", "#0000f6", "#00ff00", "#00c800", "#009000", "#ffff00", "#e7c000", "#ff9000", "#ff0000", "#d60000", "#c00000", "#f800fd"]
@@ -63,24 +83,24 @@ def plot_prediksi(radar_nama):
         cbar_dbz.set_label("Intensitas (dBZ)", color="white", fontsize=10)
         cbar_dbz.ax.tick_params(colors="white", labelsize=8)
 
-        file_output = os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_{menit_prediksi}.png")
+        # Simpan file 
         try:
+            # Gunakan menit_str agar namanya tetap ...10M.png dll untuk mempermudah fungsi buat_gif_nowcast
+            file_output = os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_{menit_str}M.png")
             plt.savefig(file_output, dpi=150, facecolor="#0e1117", bbox_inches="tight")
             print(f"Tersimpan: {file_output}")
         except Exception as e:
-            print(f"Peringatan: Gagal menyimpan {file_output} ({e})")
+            print(f"Peringatan: Gagal menyimpan gambar prediksi ({e})")
         finally:
             plt.close(fig)
 
 def buat_gif_nowcast(radar_nama):
     print(f"Merajut GIF Nowcasting untuk {radar_nama}...")
     
-    # Ambil frame kondisi saat ini (titik nol)
     pola_observasi = os.path.join(DIR_SATELIT, f"MAP_RADAR_{radar_nama.upper()}_*.png")
     file_observasi = sorted(glob.glob(pola_observasi))
     frame_awal = [file_observasi[-1]] if file_observasi else []
 
-    # Susun berurutan +10, +20, +30
     frame_prediksi = [
         os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_10M.png"),
         os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_{radar_nama.upper()}_20M.png"),
@@ -94,7 +114,6 @@ def buat_gif_nowcast(radar_nama):
             images = [Image.open(f).convert("RGB") for f in frames_valid]
             output_gif = os.path.join(DIR_SATELIT, f"NOWCAST_RADAR_{radar_nama.upper()}.gif")
             
-            # Frame terakhir (prediksi +30M) ditahan lebih lama
             durations = [700] * (len(images) - 1) + [2000]
             images[0].save(output_gif, save_all=True, append_images=images[1:], duration=durations, loop=0, optimize=True)
             print(f"[OK] Animasi Nowcast Selesai: {output_gif}")
