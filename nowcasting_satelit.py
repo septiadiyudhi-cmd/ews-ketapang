@@ -41,13 +41,11 @@ def proses_nowcasting_satelit_npz():
         npz_prev = np.load(file_sebelumnya)
         npz_curr = np.load(file_terbaru)
         
-        # Ekstrak sesuai kunci yang benar dari log terminal
         data_prev = npz_prev['data_values']
         data_curr = npz_curr['data_values']
         lons = npz_curr['lon']
         lats = npz_curr['lat']
         
-        # PAKSA RESHAPE JIKA BENTUKNYA 1 DIMENSI
         if len(data_prev.shape) == 1:
             data_prev = data_prev.reshape((len(lats), len(lons)))
         if len(data_curr.shape) == 1:
@@ -57,7 +55,7 @@ def proses_nowcasting_satelit_npz():
         print(f"Gagal memuat data .npz: {e}")
         return
 
-    # 3. Normalisasi data suhu (-80 sampai 40 C) ke format 8-bit (0-255) untuk mesin OpenCV
+    # 3. Normalisasi data suhu ke format 8-bit untuk OpenCV
     def skala_ke_8bit(data_suhu):
         data_clip = np.clip(data_suhu, -80, 40)
         data_8bit = ((40 - data_clip) / 120 * 255).astype(np.uint8)
@@ -81,20 +79,25 @@ def proses_nowcasting_satelit_npz():
 
     frame_prediksi = []
     
-    # 5. Ekstrapolasi dan Plotting
-    for step in range(1, 7):
+    # 5. Ekstrapolasi dan Plotting (Dari T-0 sampai T+60)
+    for step in range(0, 7): # PERUBAHAN: Mulai dari 0 untuk membuat frame T-0
         menit = step * 10
         waktu_berlaku = waktu_awal + timedelta(minutes=menit)
         teks_waktu = waktu_berlaku.strftime("%Y-%m-%d %H:%M UTC")
         
-        # Geser MATRIKS SUHU MENTAH 2D
-        h, w = data_curr.shape
-        map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
-        map_x = map_x - (flow[..., 0] * step)
-        map_y = map_y - (flow[..., 1] * step)
-        
-        data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
-                              interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+        # Ekstrapolasi matriks
+        if step == 0:
+             # Untuk T-0, gunakan data aktual tanpa geseran
+             data_pred = data_curr.astype(np.float32)
+        else:
+             # Untuk prediksi, geser berdasarkan flow
+             h, w = data_curr.shape
+             map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
+             map_x = map_x - (flow[..., 0] * step)
+             map_y = map_y - (flow[..., 1] * step)
+             
+             data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
+                                   interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
         
         # Peta Cartopy
         fig = plt.figure(figsize=(10, 6), dpi=150, facecolor="#0e1117")
@@ -105,6 +108,7 @@ def proses_nowcasting_satelit_npz():
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
         
+        # Sembunyikan suhu hangat
         data_mask = np.ma.masked_greater(data_pred, 5.0)
         
         mesh = ax.pcolormesh(lons, lats, data_mask, transform=ccrs.PlateCarree(),
@@ -113,7 +117,8 @@ def proses_nowcasting_satelit_npz():
         ax.plot(114.39, -8.14, marker='*', color='yellow', markersize=12, transform=ccrs.PlateCarree(), zorder=10)
         ax.text(114.45, -8.14, "Ketapang", color="white", transform=ccrs.PlateCarree(), zorder=10, fontsize=10, fontweight='bold')
         
-        ax.set_title(f"Prediksi Satelit Himawari-9 (Suhu Puncak Awan)\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
+        judul_tambahan = "(Aktual)" if step == 0 else "(Prediksi)"
+        ax.set_title(f"Satelit Himawari-9 (Suhu Puncak Awan) {judul_tambahan}\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
         
         cbar = plt.colorbar(mesh, ax=ax, orientation='vertical', pad=0.02, shrink=0.8)
         cbar.set_label("Suhu (°C)", color="white")
@@ -131,12 +136,8 @@ def proses_nowcasting_satelit_npz():
 
     # 6. Rajut GIF
     print("Merajut GIF Nowcasting Satelit...")
-    gambar_t0 = os.path.join(DIR_SATELIT, "HIMAWARI_B13_TERBARU.png")
-    frames_valid = []
-    if os.path.exists(gambar_t0):
-        frames_valid.append(gambar_t0)
-    
-    frames_valid.extend([f for f in frame_prediksi if os.path.exists(f)])
+    # Menggunakan frame yang dihasilkan skrip ini agar ukuran dan rasionya sama
+    frames_valid = [f for f in frame_prediksi if os.path.exists(f)]
     
     if len(frames_valid) > 1:
         try:
