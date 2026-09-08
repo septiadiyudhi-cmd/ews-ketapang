@@ -22,7 +22,6 @@ DIR_SATELIT = "./Satelit"
 def proses_nowcasting_satelit_npz():
     print("\n=== Memulai Nowcasting Satelit Himawari-9 (Mode NPZ) ===")
     
-    # 1. Cari file .npz terbaru
     pola_pencarian = os.path.join(DIR_CACHE, "H09_B13_*.npz")
     daftar_file = sorted(glob.glob(pola_pencarian))
     
@@ -33,10 +32,6 @@ def proses_nowcasting_satelit_npz():
     file_sebelumnya = daftar_file[-2]
     file_terbaru = daftar_file[-1]
     
-    print(f"Data T-1: {os.path.basename(file_sebelumnya)}")
-    print(f"Data T-0: {os.path.basename(file_terbaru)}")
-
-    # 2. Muat dan Bentuk Ulang (Reshape) Data Mentah
     try:
         npz_prev = np.load(file_sebelumnya)
         npz_curr = np.load(file_terbaru)
@@ -55,7 +50,6 @@ def proses_nowcasting_satelit_npz():
         print(f"Gagal memuat data .npz: {e}")
         return
 
-    # 3. Normalisasi data suhu ke format 8-bit untuk OpenCV
     def skala_ke_8bit(data_suhu):
         data_clip = np.clip(data_suhu, -80, 40)
         data_8bit = ((40 - data_clip) / 120 * 255).astype(np.uint8)
@@ -64,12 +58,10 @@ def proses_nowcasting_satelit_npz():
     gray_prev = skala_ke_8bit(data_prev)
     gray_curr = skala_ke_8bit(data_curr)
 
-    # 4. Hitung Optical Flow
     flow = cv2.calcOpticalFlowFarneback(gray_prev, gray_curr, None, 
                                         pyr_scale=0.5, levels=3, winsize=15, 
                                         iterations=3, poly_n=5, poly_sigma=1.2, flags=0)
 
-    # Ambil waktu valid
     nama_file = os.path.basename(file_terbaru)
     waktu_str = nama_file.split("_")[-1].replace(".npz", "")
     try:
@@ -79,18 +71,14 @@ def proses_nowcasting_satelit_npz():
 
     frame_prediksi = []
     
-    # 5. Ekstrapolasi dan Plotting (Dari T-0 sampai T+60)
-    for step in range(0, 7): # PERUBAHAN: Mulai dari 0 untuk membuat frame T-0
+    for step in range(0, 7):
         menit = step * 10
         waktu_berlaku = waktu_awal + timedelta(minutes=menit)
         teks_waktu = waktu_berlaku.strftime("%Y-%m-%d %H:%M UTC")
         
-        # Ekstrapolasi matriks
         if step == 0:
-             # Untuk T-0, gunakan data aktual tanpa geseran
              data_pred = data_curr.astype(np.float32)
         else:
-             # Untuk prediksi, geser berdasarkan flow
              h, w = data_curr.shape
              map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
              map_x = map_x - (flow[..., 0] * step)
@@ -99,8 +87,8 @@ def proses_nowcasting_satelit_npz():
              data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
                                    interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
         
-        # Peta Cartopy
-        fig = plt.figure(figsize=(10, 6), dpi=150, facecolor="#0e1117")
+        # Ukuran dan resolusi peta diperkecil (figsize 8x5, dpi 120)
+        fig = plt.figure(figsize=(8, 5), dpi=120, facecolor="#0e1117")
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_facecolor("#0e1117")
         ax.set_extent([112.0, 116.0, -9.5, -6.5], crs=ccrs.PlateCarree())
@@ -108,14 +96,12 @@ def proses_nowcasting_satelit_npz():
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
         
-        # Sembunyikan suhu hangat
         data_mask = np.ma.masked_greater(data_pred, 5.0)
         
         mesh = ax.pcolormesh(lons, lats, data_mask, transform=ccrs.PlateCarree(),
                              cmap='nipy_spectral_r', vmin=-80, vmax=20, zorder=2, shading='auto')
         
-        ax.plot(114.39, -8.14, marker='*', color='yellow', markersize=12, transform=ccrs.PlateCarree(), zorder=10)
-        ax.text(114.45, -8.14, "Ketapang", color="white", transform=ccrs.PlateCarree(), zorder=10, fontsize=10, fontweight='bold')
+        # Bintang dan Teks Ketapang telah dihapus dari blok ini
         
         judul_tambahan = "(Aktual)" if step == 0 else "(Prediksi)"
         ax.set_title(f"Satelit Himawari-9 (Suhu Puncak Awan) {judul_tambahan}\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
@@ -126,17 +112,13 @@ def proses_nowcasting_satelit_npz():
         
         file_output = os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_SATELIT_{menit}M.png")
         try:
-            plt.savefig(file_output, dpi=150, facecolor="#0e1117", bbox_inches="tight")
+            plt.savefig(file_output, dpi=120, facecolor="#0e1117", bbox_inches="tight")
             frame_prediksi.append(file_output)
-            print(f"Tersimpan: {file_output}")
-        except Exception as e:
-            print(f"Peringatan: Gagal menyimpan gambar prediksi ({e})")
+        except Exception:
+            pass
         finally:
             plt.close(fig)
 
-    # 6. Rajut GIF
-    print("Merajut GIF Nowcasting Satelit...")
-    # Menggunakan frame yang dihasilkan skrip ini agar ukuran dan rasionya sama
     frames_valid = [f for f in frame_prediksi if os.path.exists(f)]
     
     if len(frames_valid) > 1:
@@ -145,9 +127,9 @@ def proses_nowcasting_satelit_npz():
             output_gif = os.path.join(DIR_SATELIT, "NOWCAST_SATELIT_ANIMASI.gif")
             durations = [700] * (len(images) - 1) + [2000]
             images[0].save(output_gif, save_all=True, append_images=images[1:], duration=durations, loop=0, optimize=True)
-            print(f"[OK] Animasi Satelit Selesai: {output_gif}")
+            print(f"Animasi Satelit Selesai: {output_gif}")
         except Exception as e:
-            print(f"[GAGAL] Gagal merajut GIF: {e}")
+            print(f"Gagal merajut GIF: {e}")
 
 if __name__ == "__main__":
     proses_nowcasting_satelit_npz()
