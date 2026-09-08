@@ -88,6 +88,15 @@ st.markdown(
         font-size: 50px;  /* Angka ini diperbesar */
         font-weight: bold; /* Dibuat lebih tebal */
     }
+    /* Membatasi ukuran maksimal gambar statis/animasi secara umum */
+    .img-fluid {
+        max-width: 750px;
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        display: block;
+        margin: auto;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -452,7 +461,15 @@ with tab_nowcast:
     # 2. Bagian Nowcasting Satelit (TBA)
     st.markdown("#### 2. Animasi Prediksi Satelit Himawari-9")
     if os.path.exists(GIF_NOWCAST_SATELIT):
-        st.image(GIF_NOWCAST_SATELIT, use_container_width=True)
+        # PERUBAHAN: Gunakan HTML img tag dipadukan dengan kelas CSS img-fluid untuk membatasi ukuran
+        import base64
+        with open(GIF_NOWCAST_SATELIT, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+            
+        st.markdown(
+            f'<img src="data:image/gif;base64,{encoded_string}" class="img-fluid">',
+            unsafe_allow_html=True
+        )
     else:
         st.warning("Animasi Nowcasting Satelit Himawari-9 belum tersedia. Menunggu integrasi skrip backend baru.")
 
