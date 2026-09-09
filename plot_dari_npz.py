@@ -154,9 +154,11 @@ def gambar_dari_npz(npz_path):
     ax.plot(lon15, lat15, color="magenta", linewidth=2, linestyle="--", transform=ccrs.PlateCarree(), zorder=21)
     ax.plot(TARGET_LON, TARGET_LAT, marker="s", markersize=4, markerfacecolor="magenta", markeredgecolor="white", transform=ccrs.PlateCarree(), zorder=22)
 
-    # 5A. Kosmetik Peta (Colorbar Satelit - Bagian Dalam)
-    cbar = plt.colorbar(mesh, ax=ax, orientation="vertical", shrink=0.55, pad=0.035, ticks=TEMP_LEVELS)
-    cbar.set_label("Suhu Satelit (°C)", color="white", fontsize=11)
+    # 5A. Kosmetik Peta (Colorbar Satelit - Bagian Luar Sisi Kanan)
+    # [Kiri, Bawah, Lebar, Tinggi] (Dalam rasio persentase dari ukuran peta)
+    cax_satelit = ax.inset_axes([1.02, 0.2, 0.03, 0.6])
+    cbar = plt.colorbar(mesh, cax=cax_satelit, orientation="vertical", ticks=TEMP_LEVELS)
+    cbar.set_label("Suhu (°C)", color="white", fontsize=11)
     cbar.ax.tick_params(colors="white", labelsize=9)
 
     # 5B. Kosmetik Peta (Colorbar Radar - Bagian Bawah Horizontal)
