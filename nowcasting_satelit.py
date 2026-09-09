@@ -108,8 +108,12 @@ def proses_nowcasting_satelit_npz():
         data_mask = np.ma.masked_greater(data_pred, 5.0)
         
         # Definisikan rentang suhu (level) dan warna (HEX) yang persis sama dengan skrip utamamu
-        batas_suhu = [-80, -70, -60, -50, -40, -34, -20, 0, 20]
-        daftar_warna = ['#000000', '#ff0000', '#ff9900', '#ffff00', '#00cc00', '#00ffff', '#0000ff', '#ffffff']
+        batas_suhu = [-100, -80, -75, -69, -62, -56, -48, -41, -34, -28, -21, -13, -7, 0, 8, 14, 21, 60]
+        daftar_warna = [
+             "#ff0000", "#ff4444", "#ff7777", "#ffb07c", "#ff9900", "#ff6600",
+             "#d99b00", "#b8b000", "#9ed000", "#68d900", "#00e070", "#00bfbf",
+             "#27a7e8", "#458df5", "#416fca", "#14588e", "#08355f"
+        ]
 
         cmap_kustom = ListedColormap(daftar_warna)
         norm_kustom = BoundaryNorm(batas_suhu, cmap_kustom.N)
