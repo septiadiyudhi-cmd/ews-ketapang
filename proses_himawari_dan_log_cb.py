@@ -92,20 +92,17 @@ def cari_remote_dir(ftp):
     return None
 
 def bersihkan_local_dir():
-    # 1. Hapus NetCDF dan PNG yang sudah usang
     for nama_file in os.listdir(LOCAL_DIR):
         if nama_file.lower().endswith(".nc"):
             try:
                 os.remove(os.path.join(LOCAL_DIR, nama_file))
             except Exception: pass
         elif nama_file.lower().endswith(".png"):
-            # PERBAIKAN: Hapus bersih semua file prediksi/nowcast dari siklus jam sebelumnya agar tidak menumpuk
             if (not nama_file.startswith("RADAR_") and not nama_file.startswith("MAP_")) or "PREDIKSI" in nama_file or "NOWCAST" in nama_file:
                 try:
                     os.remove(os.path.join(LOCAL_DIR, nama_file))
                 except Exception: pass
 
-    # 2. Hapus Cache Data Satelit
     if os.path.isdir(CACHE_DIR):
         for nama_file in os.listdir(CACHE_DIR):
             if nama_file.lower().endswith(".npz"):
@@ -113,7 +110,6 @@ def bersihkan_local_dir():
                     os.remove(os.path.join(CACHE_DIR, nama_file))
                 except Exception: pass
 
-    # 3. MANAJEMEN ARSIP RADAR (Murni Data Observasi Asli)
     jenis_radar = ["RADAR_SURABAYA_", "RADAR_DENPASAR_", "MAP_RADAR_SURABAYA_", "MAP_RADAR_DENPASAR_"]
     for prefix in jenis_radar:
         daftar_file = sorted([
@@ -121,7 +117,6 @@ def bersihkan_local_dir():
             if f.startswith(prefix) and f.lower().endswith(".png") and "PREDIKSI" not in f
         ])
         
-        # PERBAIKAN: Naikkan batas simpanan histori observasi dari 5 menjadi 10 file
         if len(daftar_file) > 10:
             for file_usang in daftar_file[:-10]:
                 try:
@@ -164,21 +159,17 @@ def auto_ftp_download():
 
     bersihkan_local_dir()
     
-    # Tutup koneksi pencarian agar tidak idle dan diputus sepihak
     try: ftp.quit()
     except: pass
 
     hasil_download = []
-    # UNDUH MENGGUNAKAN cURL BUKAN Python ftplib
     for nama_file in file_terbaru:
         local_path = os.path.join(LOCAL_DIR, nama_file)
         print(f"\nMengunduh {nama_file} menggunakan cURL...")
         
-        # URL lengkap menuju file FTP
         url_ftp = f"ftp://{FTP_HOST}{remote_dir}/{nama_file}"
         
         try:
-            # Panggil cURL via terminal dengan batas waktu maksimal 10 menit
             subprocess.run([
                 "curl", "-u", f"{FTP_USER}:{FTP_PASS}",
                 "--ftp-pasv",
@@ -198,7 +189,6 @@ def auto_ftp_download():
 # SUBPROCESS: RADAR, BACA DATA, PLOT, ANGIN
 # =============================================================
 def ambil_data_radar_api():
-    """Memanggil skrip unduh_radar_api.py untuk mengambil gambar radar terbaru."""
     if not os.path.exists(SCRIPT_UNDUH_RADAR):
         print(f"[RADAR] Dilewati -- {SCRIPT_UNDUH_RADAR} tidak ditemukan.")
         return
@@ -298,7 +288,7 @@ def ambil_data_angin_aws():
         print(f"[ANGIN] Terjadi error: {e}")
         
 # =============================================================
-# BUAT GIF ANIMASI (SATELIT & RADAR)
+# BUAT GIF ANIMASI (SATELIT & RADAR) - ANTI FLICKER
 # =============================================================
 NAMA_FILE_GIF = "HIMAWARI_B13_ANIMASI.gif"
 LEBAR_GIF_PIKSEL = 700
@@ -336,9 +326,17 @@ def buat_gif_dari_daftar(daftar_file, output_gif, background_hitam=False):
     durasi_tiap_frame = [DURASI_PER_FRAME_MS] * (len(frame_list) - 1) + [JEDA_FRAME_TERAKHIR_MS]
     
     try:
-        frame_list[0].save(
-            output_gif, save_all=True, append_images=frame_list[1:],
-            duration=durasi_tiap_frame, loop=0, optimize=True,
+        # PERBAIKAN: Gunakan 1 palet warna global dari gambar pertama untuk mencegah kedipan (flicker)
+        img_pertama = frame_list[0].convert("P", palette=PILImage.ADAPTIVE, colors=256)
+        
+        frames_seragam = [img_pertama]
+        for img in frame_list[1:]:
+            frames_seragam.append(img.quantize(palette=img_pertama))
+            
+        # Simpan dengan optimize=False agar warna batangan (colorbar) dikunci mati
+        frames_seragam[0].save(
+            output_gif, save_all=True, append_images=frames_seragam[1:],
+            duration=durasi_tiap_frame, loop=0, optimize=False,
         )
         print(f"[GIF] Animasi dibuat: {os.path.basename(output_gif)} ({len(frame_list)} frame)")
     except Exception as e:
