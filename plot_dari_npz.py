@@ -156,7 +156,7 @@ def gambar_dari_npz(npz_path):
 
     # 5A. Kosmetik Peta (Colorbar Satelit - Bagian Luar Sisi Kanan)
     # [Kiri, Bawah, Lebar, Tinggi] (Dalam rasio persentase dari ukuran peta)
-    cax_satelit = ax.inset_axes([1.02, 0.2, 0.03, 0.6])
+    cax_satelit = ax.inset_axes([1.02, 0.2, 0.03, 0.7])
     cbar = plt.colorbar(mesh, cax=cax_satelit, orientation="vertical", ticks=TEMP_LEVELS)
     cbar.set_label("Suhu (°C)", color="white", fontsize=11)
     cbar.ax.tick_params(colors="white", labelsize=9)
