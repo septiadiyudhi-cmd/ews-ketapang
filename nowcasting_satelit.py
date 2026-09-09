@@ -11,6 +11,7 @@ import cv2
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from PIL import Image
@@ -106,8 +107,16 @@ def proses_nowcasting_satelit_npz():
         
         data_mask = np.ma.masked_greater(data_pred, 5.0)
         
+        # Definisikan rentang suhu (level) dan warna (HEX) yang persis sama dengan skrip utamamu
+        batas_suhu = [-80, -70, -60, -50, -40, -34, -20, 0, 20]
+        daftar_warna = ['#000000', '#ff0000', '#ff9900', '#ffff00', '#00cc00', '#00ffff', '#0000ff', '#ffffff']
+
+        cmap_kustom = ListedColormap(daftar_warna)
+        norm_kustom = BoundaryNorm(batas_suhu, cmap_kustom.N)
+
+        # Terapkan warna kustom ke dalam pcolormesh
         mesh = ax.pcolormesh(lons, lats, data_mask, transform=ccrs.PlateCarree(),
-                             cmap='nipy_spectral_r', vmin=-80, vmax=20, zorder=2, shading='auto')
+                             cmap=cmap_kustom, norm=norm_kustom, zorder=2, shading='auto')
         
         judul_tambahan = "(Aktual)" if step == 0 else "(Prediksi)"
         ax.set_title(f"Satelit Himawari-9 (Suhu Puncak Awan) {judul_tambahan}\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
