@@ -253,12 +253,21 @@ with tab_utama:
 
     with col_status:
         warna = WARNA_STATUS.get(status_terbaru, "gray")
+        
+        # Translasi format waktu ke Bahasa Indonesia
+        try:
+            w_dt = datetime.strptime(waktu_terbaru, "%Y-%m-%d %H:%M")
+            bln = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+            teks_waktu_tampil = f"Tanggal {w_dt.day} {bln[w_dt.month]} {w_dt.year} pukul {w_dt.strftime('%H:%M')} WIB"
+        except Exception:
+            teks_waktu_tampil = f"Berlaku : {waktu_terbaru} WIB"
+
         st.markdown(
             f"""
             <div style="background-color:{warna}22; border:2px solid {warna}; border-radius:8px; padding:16px; text-align:center; height:100%;">
                 <div style="font-size:18px; color:#cccccc;">Status Saat Ini</div>
                 <div style="font-size:36px; font-weight:bold; color:{warna}; margin: 8px 0;">{status_terbaru}</div>
-                <div style="font-size:16px; color:#aaaaaa;">Berlaku : {waktu_terbaru} WIB</div>
+                <div style="font-size:16px; color:#aaaaaa;">{teks_waktu_tampil}</div>
             </div>
             """, unsafe_allow_html=True
         )
