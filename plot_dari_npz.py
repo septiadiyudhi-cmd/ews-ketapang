@@ -113,7 +113,7 @@ def gambar_dari_npz(npz_path):
     ax.set_extent([113.70, 115.90, -9.20, -7.00], crs=ccrs.PlateCarree())
 
     # 1. PLOT AWAN SATELIT (Z-Order: 1)
-    mesh = ax.pcolormesh(lon, lat, data_values, cmap=cmap, norm=norm, shading="auto", transform=ccrs.PlateCarree(), zorder=1)
+    mesh = ax.contourf(lon, lat, data_values, levels=TEMP_LEVELS, cmap=cmap, norm=norm, transform=ccrs.PlateCarree(), zorder=1)
 
     # 2. PLOT OVERLAY RADAR CUACA (Z-Order: 15)
     for radar_nama, info in INFO_RADAR.items():
