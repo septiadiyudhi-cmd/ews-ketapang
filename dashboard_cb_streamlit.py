@@ -287,7 +287,7 @@ with tab_utama:
         st.markdown(
             f"""
             <div style="background-color:{warna_radar}22; border:2px solid {warna_radar}; border-radius:8px; padding:16px; height:100%;">
-                <div style="font-size:14px; color:#cccccc;">Intensitas Radar Maksimum (Radius 20 km)</div>
+                <div style="font-size:14px; color:#cccccc;">Intensitas Radar CMAX (Radius 20 km)</div>
                 <div style="font-size:24px; font-weight:bold; color:{warna_radar}; margin-top:4px;">
                     {dbz_terbaru if pd.notna(dbz_terbaru) and dbz_terbaru != "" else "-"} dBZ
                 </div>
@@ -357,7 +357,7 @@ with tab_utama:
                 st.image(path_terpilih, use_container_width=True)
 
     with col_kanan:
-        st.markdown("#### 📊 Analisis Sel Konvektif Gabungan")
+        st.markdown("#### 📊 Analisis Sel Konvektif")
         
         jumlah_sel = baris_terbaru.get("jumlah_sel_signifikan", "")
         luas_terbesar = baris_terbaru.get("luas_sel_terbesar_km2", "")
@@ -411,8 +411,8 @@ with tab_utama:
         })
     st.dataframe(df_tabel, use_container_width=True, height=350)
     st.caption(
-        "Data diproses otomatis dari citra Himawari-9 kanal B13 tiap 10 menit. "
-        f"Sel awan dengan suhu puncak ≤ {AMBANG_SEL_SIGNIFIKAN_C}°C dianggap signifikan."
+        "Data diproses otomatis dari Citra Satelit Himawari-9 kanal B13 dan Radar Cuaca CMAX tiap 10 menit. "
+        f"Sel awan dengan suhu puncak ≤ {AMBANG_SEL_SIGNIFIKAN_C}°C dan nilai intensitas >5 dbz dianggap signifikan."
     )
 
 
