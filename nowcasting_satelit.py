@@ -91,13 +91,17 @@ def proses_nowcasting_satelit_npz():
     cmap_kustom = ListedColormap(daftar_warna)
     norm_kustom = BoundaryNorm(batas_suhu, cmap_kustom.N)
 
+    # Buat latar belakang tiruan yang bersih dari awan (diisi suhu laut wajar 18°C)
+    background_bersih = np.copy(data_curr)
+    background_bersih[background_bersih < 10.0] = 18.0 
+
     for step in range(0, 7):
         menit = step * 10
         waktu_berlaku = waktu_awal + timedelta(minutes=menit)
         teks_waktu = waktu_berlaku.strftime("%Y-%m-%d %H:%M UTC")
         
         if step == 0:
-            data_pred = data_curr.astype(np.float32)
+            data_tampil = data_curr.astype(np.float32)
         else:
             h, w = data_curr.shape
             map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
@@ -106,6 +110,12 @@ def proses_nowcasting_satelit_npz():
             
             data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
                                   interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            
+            # KUNCI PERBAIKAN: Tempelkan awan yang bergerak ke atas background statis
+            # Jika suhu di bawah 10°C (awan), gunakan data yang bergerak (data_pred)
+            # Jika tidak, gunakan background laut/darat yang diam (background_bersih)
+            mask_awan_pred = data_pred < 10.0
+            data_tampil = np.where(mask_awan_pred, data_pred, background_bersih)
         
         fig = plt.figure(figsize=(10, 6), dpi=150, facecolor="#0e1117")
         ax = plt.axes(projection=ccrs.PlateCarree())
@@ -115,9 +125,9 @@ def proses_nowcasting_satelit_npz():
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
         
-        # Gunakan contourf (mulus) & data_pred langsung tanpa masking agar daerah Jawa/Bali terisi warna biru
+        # Ubah data_pred menjadi data_tampil agar background tidak melengkung
         mesh = ax.contourf(
-            lons, lats, data_pred, 
+            lons, lats, data_tampil, 
             levels=batas_suhu, 
             cmap=cmap_kustom, 
             norm=norm_kustom, 
