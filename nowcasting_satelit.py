@@ -116,6 +116,17 @@ def proses_nowcasting_satelit_npz():
         
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
+
+        # Tambahkan Grid putus-putus
+        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, color="white", alpha=0.65, linestyle=":", zorder=30)
+
+        # Label Longitude (Berada di dasar peta: Y = -9.5)
+        for lon_tick in [112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5]:
+            ax.text(lon_tick, -9.5 + 0.03, f"{lon_tick:.1f}\u00b0E", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="center", va="bottom", zorder=35)
+            
+        # Label Latitude (Berada di sisi kiri peta: X = 112.0)
+        for lat_tick in [-7.0, -7.5, -8.0, -8.5, -9.0]:
+            ax.text(112.0 + 0.03, lat_tick, f"{abs(lat_tick):.1f}\u00b0S", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="left", va="center", rotation=90, zorder=35)
         
         # Gambar prediksi dengan contourf agar batas suhunya melengkung mulus
         mesh = ax.contourf(
