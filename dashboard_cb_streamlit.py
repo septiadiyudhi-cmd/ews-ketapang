@@ -258,7 +258,7 @@ with tab_utama:
             <div style="background-color:{warna}22; border:2px solid {warna}; border-radius:8px; padding:16px; text-align:center; height:100%;">
                 <div style="font-size:18px; color:#cccccc;">Status Saat Ini</div>
                 <div style="font-size:36px; font-weight:bold; color:{warna}; margin: 8px 0;">{status_terbaru}</div>
-                <div style="font-size:16px; color:#aaaaaa;">Pukul {waktu_terbaru} WIB</div>
+                <div style="font-size:16px; color:#aaaaaa;">Berlaku : {waktu_terbaru} WIB</div>
             </div>
             """, unsafe_allow_html=True
         )
