@@ -12,11 +12,12 @@ Versi Multi-Sensor (Isolasi Penuh - GITHUB ACTIONS VERSION):
 """
 
 from ftplib import FTP
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 import re
 import sys
 import subprocess
+import time
 
 # =============================================================
 # KONFIGURASI FTP SATELIT
@@ -75,7 +76,8 @@ def ambil_timestamp(nama_file):
         return datetime.min
 
 def cari_remote_dir(ftp):
-    waktu_utc = datetime.utcnow()
+    # Perbaikan DeprecationWarning menggunakan format Python modern
+    waktu_utc = datetime.now(timezone.utc)
     kandidat_tanggal = [waktu_utc, waktu_utc - timedelta(days=1)]
 
     for tanggal in kandidat_tanggal:
@@ -130,25 +132,51 @@ def bersihkan_local_dir():
 # =============================================================
 def auto_ftp_download():
     print("\n=== KONEKSI FTP (SATELIT) ===")
-    ftp = FTP(FTP_HOST, timeout=60)
-    print("Koneksi host berhasil, mencari daftar file...")
-    ftp.login(FTP_USER, FTP_PASS)
-    ftp.set_pasv(True)
+    
+    maks_percobaan = 3
+    semua_file = []
+    remote_dir = None
+    
+    # Mekanisme Auto-Retry untuk mencegah crash WinError 10054
+    for percobaan in range(1, maks_percobaan + 1):
+        try:
+            print(f"Mencoba koneksi (Percobaan {percobaan}/{maks_percobaan})...")
+            ftp = FTP(FTP_HOST, timeout=60)
+            ftp.login(FTP_USER, FTP_PASS)
+            ftp.set_pasv(True)
 
-    remote_dir = cari_remote_dir(ftp)
-    if remote_dir is None:
-        print("Folder FTP hari ini/kemarin tidak ditemukan.")
-        try: ftp.quit()
-        except: pass
-        return []
+            remote_dir = cari_remote_dir(ftp)
+            if remote_dir is None:
+                print("Folder FTP hari ini/kemarin tidak ditemukan.")
+                try: ftp.quit()
+                except: pass
+                return []
 
-    semua_file = ftp.nlst()
+            # Momen paling rawan putus (meminta daftar file)
+            semua_file = ftp.nlst()
+            
+            try: ftp.quit()
+            except: pass
+            
+            # Jika nlst sukses tanpa terputus, keluar dari perulangan
+            break 
+            
+        except Exception as e:
+            print(f"[X] Koneksi terputus dari server: {e}")
+            try: ftp.close()
+            except: pass
+            
+            if percobaan == maks_percobaan:
+                print("Gagal mengambil daftar file setelah maksimal percobaan. Dilewati.")
+                return []
+            
+            print("Menunggu 5 detik sebelum mencoba lagi...")
+            time.sleep(5)
+
     file_nc = [f for f in semua_file if f.lower().endswith(EKSTENSI) and f"_{BAND}_" in f]
 
     if not file_nc:
         print(f"Tidak ada file {BAND} di {remote_dir}")
-        try: ftp.quit()
-        except: pass
         return []
 
     file_terbaru = sorted(file_nc, key=ambil_timestamp)[-JUMLAH_FILE:]
@@ -158,9 +186,6 @@ def auto_ftp_download():
         print(" -", nama)
 
     bersihkan_local_dir()
-    
-    try: ftp.quit()
-    except: pass
 
     hasil_download = []
     for nama_file in file_terbaru:
