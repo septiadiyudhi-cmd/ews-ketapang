@@ -63,14 +63,15 @@ def proses_nowcasting_satelit_npz():
     gray_prev = skala_ke_8bit(data_prev)
     gray_curr = skala_ke_8bit(data_curr)
 
-    # Perhitungan Optical Flow (Disetel khusus untuk awan satelit)
+    # Perhitungan Optical Flow
     flow = cv2.calcOpticalFlowFarneback(gray_prev, gray_curr, None, 
                                         pyr_scale=0.5, levels=3, winsize=31, 
                                         iterations=3, poly_n=7, poly_sigma=1.5, flags=0)
                                         
-    # Median Filter untuk merapikan arah angin (mencegah efek garis melar)
-    flow[..., 0] = cv2.medianBlur(flow[..., 0], 5)
-    flow[..., 1] = cv2.medianBlur(flow[..., 1], 5)
+    # KUNCI PERBAIKAN: Gunakan Gaussian Blur yang kuat pada matriks vektor arah pergerakan.
+    # Ini akan menyatukan pergerakan piksel liar sehingga seluruh peta bergeser mulus serentak.
+    flow[..., 0] = cv2.GaussianBlur(flow[..., 0], (25, 25), 0)
+    flow[..., 1] = cv2.GaussianBlur(flow[..., 1], (25, 25), 0)
 
     nama_file = os.path.basename(file_terbaru)
     waktu_str = nama_file.split("_")[-1].replace(".npz", "")
@@ -91,31 +92,22 @@ def proses_nowcasting_satelit_npz():
     cmap_kustom = ListedColormap(daftar_warna)
     norm_kustom = BoundaryNorm(batas_suhu, cmap_kustom.N)
 
-    # Buat latar belakang tiruan yang bersih dari awan (diisi suhu laut wajar 18°C)
-    background_bersih = np.copy(data_curr)
-    background_bersih[background_bersih < 10.0] = 18.0 
-
     for step in range(0, 7):
         menit = step * 10
         waktu_berlaku = waktu_awal + timedelta(minutes=menit)
         teks_waktu = waktu_berlaku.strftime("%Y-%m-%d %H:%M UTC")
         
         if step == 0:
-            data_tampil = data_curr.astype(np.float32)
+            data_pred = data_curr.astype(np.float32)
         else:
             h, w = data_curr.shape
             map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
             map_x = map_x - (flow[..., 0] * step)
             map_y = map_y - (flow[..., 1] * step)
             
+            # Kita remap seluruh data suhu aslinya, tanpa masking
             data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
                                   interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
-            
-            # KUNCI PERBAIKAN: Tempelkan awan yang bergerak ke atas background statis
-            # Jika suhu di bawah 10°C (awan), gunakan data yang bergerak (data_pred)
-            # Jika tidak, gunakan background laut/darat yang diam (background_bersih)
-            mask_awan_pred = data_pred < 10.0
-            data_tampil = np.where(mask_awan_pred, data_pred, background_bersih)
         
         fig = plt.figure(figsize=(10, 6), dpi=150, facecolor="#0e1117")
         ax = plt.axes(projection=ccrs.PlateCarree())
@@ -125,9 +117,9 @@ def proses_nowcasting_satelit_npz():
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
         
-        # Ubah data_pred menjadi data_tampil agar background tidak melengkung
+        # Gambar prediksi dengan contourf agar batas suhunya melengkung mulus
         mesh = ax.contourf(
-            lons, lats, data_tampil, 
+            lons, lats, data_pred, 
             levels=batas_suhu, 
             cmap=cmap_kustom, 
             norm=norm_kustom, 
