@@ -11,11 +11,12 @@ import cv2
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from matplotlib.colors import ListedColormap, BoundaryNorm
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from PIL import Image
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 DIR_CACHE = "./Satelit/_cache"
 DIR_SATELIT = "./Satelit"
@@ -76,27 +77,36 @@ def proses_nowcasting_satelit_npz():
     try:
         waktu_awal = datetime.strptime(waktu_str, "%Y%m%d%H%M")
     except Exception:
-        waktu_awal = datetime.utcnow()
+        waktu_awal = datetime.now(timezone.utc)
 
     frame_prediksi = []
     
+    # Rentang suhu & warna kustom identik dengan EWS Utama
+    batas_suhu = [-100, -80, -75, -69, -62, -56, -48, -41, -34, -28, -21, -13, -7, 0, 8, 14, 21, 60]
+    daftar_warna = [
+        "#ff0000", "#ff4444", "#ff7777", "#ffb07c", "#ff9900", "#ff6600",
+        "#d99b00", "#b8b000", "#9ed000", "#68d900", "#00e070", "#00bfbf",
+        "#27a7e8", "#458df5", "#416fca", "#14588e", "#08355f"
+    ]
+    cmap_kustom = ListedColormap(daftar_warna)
+    norm_kustom = BoundaryNorm(batas_suhu, cmap_kustom.N)
+
     for step in range(0, 7):
         menit = step * 10
         waktu_berlaku = waktu_awal + timedelta(minutes=menit)
         teks_waktu = waktu_berlaku.strftime("%Y-%m-%d %H:%M UTC")
         
         if step == 0:
-             data_pred = data_curr.astype(np.float32)
+            data_pred = data_curr.astype(np.float32)
         else:
-             h, w = data_curr.shape
-             map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
-             map_x = map_x - (flow[..., 0] * step)
-             map_y = map_y - (flow[..., 1] * step)
-             
-             data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
-                                   interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            h, w = data_curr.shape
+            map_x, map_y = np.meshgrid(np.arange(w), np.arange(h))
+            map_x = map_x - (flow[..., 0] * step)
+            map_y = map_y - (flow[..., 1] * step)
+            
+            data_pred = cv2.remap(data_curr.astype(np.float32), map_x.astype(np.float32), map_y.astype(np.float32), 
+                                  interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
         
-        # Ukuran dan resolusi peta diperkecil (figsize 8x5, dpi 120)
         fig = plt.figure(figsize=(10, 6), dpi=150, facecolor="#0e1117")
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_facecolor("#0e1117")
@@ -105,29 +115,24 @@ def proses_nowcasting_satelit_npz():
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
         
-        data_mask = np.ma.masked_greater(data_pred, 5.0)
-        
-        # Definisikan rentang suhu (level) dan warna (HEX) yang persis sama dengan skrip utamamu
-        batas_suhu = [-100, -80, -75, -69, -62, -56, -48, -41, -34, -28, -21, -13, -7, 0, 8, 14, 21, 60]
-        daftar_warna = [
-             "#ff0000", "#ff4444", "#ff7777", "#ffb07c", "#ff9900", "#ff6600",
-             "#d99b00", "#b8b000", "#9ed000", "#68d900", "#00e070", "#00bfbf",
-             "#27a7e8", "#458df5", "#416fca", "#14588e", "#08355f"
-        ]
-
-        cmap_kustom = ListedColormap(daftar_warna)
-        norm_kustom = BoundaryNorm(batas_suhu, cmap_kustom.N)
-
-        # Terapkan warna kustom ke dalam pcolormesh
-        mesh = ax.pcolormesh(lons, lats, data_mask, transform=ccrs.PlateCarree(),
-                             cmap=cmap_kustom, norm=norm_kustom, zorder=2, shading='auto')
+        # Gunakan contourf (mulus) & data_pred langsung tanpa masking agar daerah Jawa/Bali terisi warna biru
+        mesh = ax.contourf(
+            lons, lats, data_pred, 
+            levels=batas_suhu, 
+            cmap=cmap_kustom, 
+            norm=norm_kustom, 
+            transform=ccrs.PlateCarree(), 
+            zorder=2
+        )
         
         judul_tambahan = "(Aktual)" if step == 0 else "(Prediksi)"
         ax.set_title(f"Satelit Himawari-9 (Suhu Puncak Awan) {judul_tambahan}\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
         
-        cbar = plt.colorbar(mesh, ax=ax, orientation='vertical', pad=0.02, shrink=0.8)
+        # Colorbar presisi di sisi kanan luar peta
+        cax_satelit = ax.inset_axes([1.02, 0.1, 0.03, 0.8])
+        cbar = plt.colorbar(mesh, cax=cax_satelit, orientation='vertical', ticks=batas_suhu)
         cbar.set_label("Suhu (°C)", color="white")
-        cbar.ax.tick_params(colors="white")
+        cbar.ax.tick_params(colors="white", labelsize=8)
         
         file_output = os.path.join(DIR_SATELIT, f"NOWCAST_FINAL_SATELIT_{menit}M.png")
         try:
@@ -138,14 +143,26 @@ def proses_nowcasting_satelit_npz():
         finally:
             plt.close(fig)
 
+    # Rajut GIF dengan Anti-Flicker (Palet Terkunci)
     frames_valid = [f for f in frame_prediksi if os.path.exists(f)]
     
     if len(frames_valid) > 1:
         try:
             images = [Image.open(f).convert("RGB") for f in frames_valid]
+            
+            # Kunci palet warna dari gambar pertama
+            img_pertama = images[0].convert("P", palette=Image.ADAPTIVE, colors=256)
+            frames_seragam = [img_pertama]
+            for img in images[1:]:
+                frames_seragam.append(img.quantize(palette=img_pertama))
+                
             output_gif = os.path.join(DIR_SATELIT, "NOWCAST_SATELIT_ANIMASI.gif")
             durations = [700] * (len(images) - 1) + [2000]
-            images[0].save(output_gif, save_all=True, append_images=images[1:], duration=durations, loop=0, optimize=True)
+            
+            frames_seragam[0].save(
+                output_gif, save_all=True, append_images=frames_seragam[1:],
+                duration=durations, loop=0, optimize=False
+            )
             print(f"Animasi Satelit Selesai: {output_gif}")
         except Exception as e:
             print(f"Gagal merajut GIF: {e}")
