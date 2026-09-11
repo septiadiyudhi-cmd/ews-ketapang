@@ -117,8 +117,8 @@ def proses_nowcasting_satelit_npz():
         ax.add_feature(cfeature.COASTLINE.with_scale('10m'), edgecolor="#ffffff", linewidth=1.0, zorder=5)
         ax.add_feature(cfeature.BORDERS.with_scale('10m'), edgecolor="#aaaaaa", linewidth=0.8, linestyle='--', zorder=5)
 
-        # Tambahkan Grid putus-putus
-        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, color="white", alpha=0.65, linestyle=":", zorder=30)
+        # Tambahkan Grid putih putus-putus (Dashed)
+        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, color="white", alpha=0.65, linestyle="--", zorder=30)
 
         # Label Longitude (Berada di dasar peta: Y = -9.5)
         for lon_tick in [112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5]:
