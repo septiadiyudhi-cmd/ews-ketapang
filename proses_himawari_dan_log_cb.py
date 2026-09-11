@@ -9,6 +9,7 @@ Versi Multi-Sensor (Isolasi Penuh - GITHUB ACTIONS VERSION):
 - Proses .nc (Satelit) & .png (Radar) di proses terpisah (baca_data.py)
 - Plot gambar .npz (plot_dari_npz.py)
 - Download Data Angin AWS Center (ambil_angin_aws.py)
+- Notifikasi Telegram Otomatis
 """
 
 from ftplib import FTP
@@ -18,6 +19,8 @@ import re
 import sys
 import subprocess
 import time
+import requests
+import csv
 
 # =============================================================
 # KONFIGURASI FTP SATELIT
@@ -62,6 +65,42 @@ PYTHON_EXE = sys.executable
 # =============================================================
 os.makedirs(LOCAL_DIR, exist_ok=True)
 os.makedirs(CACHE_DIR, exist_ok=True)
+
+# =============================================================
+# FUNGSI NOTIFIKASI TELEGRAM
+# =============================================================
+def kirim_notif_telegram(status, waktu, jumlah_sel, suhu):
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    
+    if not bot_token or not chat_id:
+        print("[Telegram] Kredensial tidak ditemukan. Notifikasi dilewati.")
+        return
+        
+    pesan = (
+        f"🚨 *PERINGATAN EWS*\n\n"
+        f"📍 *Lokasi:* Penyeberangan Ketapang - Gilimanuk\n"
+        f"⚠️ *Status:* {status}\n"
+        f"🕒 *Waktu:* {waktu} WIB\n\n"
+        f"Terdeteksi {jumlah_sel} sel awan aktif dengan suhu {suhu}°C.\n"
+        f"Segera cek dashboard!"
+    )
+    
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": pesan,
+        "parse_mode": "Markdown"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        if response.status_code == 200:
+            print("[Telegram] Sukses mengirim notifikasi!")
+        else:
+            print(f"[Telegram] Gagal mengirim: {response.text}")
+    except Exception as e:
+        print(f"[Telegram] Error API: {e}")
 
 # =============================================================
 # FUNGSI TIMESTAMP & CLEANUP
@@ -427,6 +466,42 @@ if __name__ == "__main__":
         print("\n--- Ambil data angin AWS Center ---")
         ambil_data_angin_aws()
         
+        # 5. Pengecekan Telegram (Baca file CSV yang dihasilkan di plot_dari_npz.py)
+        print("\n--- Pengecekan Notifikasi Telegram ---")
+        log_csv = os.path.join(LOCAL_DIR, "log_status_cb.csv")
+        
+        if os.path.exists(log_csv):
+            with open(log_csv, "r", encoding="utf-8") as f:
+                reader = list(csv.DictReader(f))
+                if reader:
+                    baris_terakhir = reader[-1]
+                    status_terbaru = baris_terakhir.get("status", "AMAN")
+                    waktu_terbaru = baris_terakhir.get("waktu_wib", "")
+                    
+                    # Cek file flag agar tidak kirim pesan berulang untuk jam yang sama
+                    flag_file = os.path.join(LOCAL_DIR, "last_notif_time.txt")
+                    waktu_sebelumnya = ""
+                    
+                    if os.path.exists(flag_file):
+                        with open(flag_file, "r") as ff:
+                            waktu_sebelumnya = ff.read().strip()
+                            
+                    if status_terbaru in ["WASPADA", "SIAGA"]:
+                        if waktu_terbaru != waktu_sebelumnya:
+                            jumlah_sel = baris_terakhir.get("jumlah_sel_signifikan", "0")
+                            suhu = baris_terakhir.get("suhu_min_10km", "N/A")
+                            kirim_notif_telegram(status_terbaru, waktu_terbaru, jumlah_sel, suhu)
+                            
+                            # Catat waktu agar tidak dikirim ulang pada siklus GitHub Action berikutnya
+                            with open(flag_file, "w") as ff:
+                                ff.write(waktu_terbaru)
+                        else:
+                            print("[Telegram] Status masih buruk, tapi notifikasi untuk waktu ini sudah dikirim sebelumnya.")
+                    else:
+                        print(f"[Telegram] Status saat ini {status_terbaru}, aman terkendali.")
+        else:
+            print("[Telegram] File log status belum terbentuk. Dilewati.")
+
         print("\n=== SEMUA PROSES SELESAI DENGAN SUKSES ===")
         
     except Exception as e:
