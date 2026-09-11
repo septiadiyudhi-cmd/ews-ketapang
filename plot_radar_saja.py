@@ -5,6 +5,7 @@ Created on Mon Aug 31 18:36:42 2026
 @author: bmkg bwi
 """
 
+from datetime import datetime
 import sys
 import os
 import numpy as np
@@ -70,8 +71,18 @@ def gambar_peta_radar(radar_nama, file_input, file_output):
 
     # Tambahkan titik lokasi radar
     ax.plot(info["lon"], info["lat"], marker="^", color="red", markersize=8, transform=ccrs.PlateCarree(), zorder=15)
-    waktu_str = os.path.basename(file_input).replace(".png", "").split("_")[-2:]
-    ax.set_title(f"Radar {radar_nama.capitalize()} CMAX - {' '.join(waktu_str)} UTC", color="white", pad=10)
+    
+    # Logika Pengubah Format Waktu
+    waktu_str_list = os.path.basename(file_input).replace(".png", "").split("_")[-2:]
+    waktu_mentah = " ".join(waktu_str_list)
+    
+    try:
+        w_dt = datetime.strptime(waktu_mentah, "%Y%m%d %H%M")
+        waktu_rapi = w_dt.strftime("%d/%m/%Y %H:%M")
+    except Exception:
+        waktu_rapi = waktu_mentah
+
+    ax.set_title(f"Radar {radar_nama.capitalize()} CMAX - {waktu_rapi} UTC", color="white", pad=10)
 
     # COLORBAR SKALA INTENSITAS RADAR (dBZ)
     dbz_levels = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
