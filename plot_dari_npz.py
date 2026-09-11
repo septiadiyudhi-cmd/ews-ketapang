@@ -46,7 +46,7 @@ TEMP_COLORS = [
 POLA_TIMESTAMP = re.compile(r"(\d{12})\.nc$", re.IGNORECASE)
 
 INFO_RADAR = {
-    "SURABAYA": {"lat": -7.400, "lon": 112.700},
+    "SURABAYA": {"lat": -7.395, "lon": 112.720},
     "DENPASAR": {"lat": -8.748, "lon": 115.187}, # Posisi bujur Denpasar sudah digeser ke Timur
 }
 RADIUS_RADAR_KM = 250.0
