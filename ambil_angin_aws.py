@@ -116,6 +116,10 @@ def ambil_data_angin_terkini():
     os.makedirs(LOCAL_DIR, exist_ok=True)
     waktu_sekarang_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    if not URL_RAW_DATA:
+        print("[GAGAL] Secret AWS_RAW_DATA_URL belum diatur!")
+        return
+
     try: 
         session = buat_session_dengan_cookie()
     except FileNotFoundError as e:
@@ -123,6 +127,7 @@ def ambil_data_angin_terkini():
         return
 
     hasil_per_stasiun = {}
+    # ... (dan seterusnya ke bawah) ...
     error_list = []
 
     for nama_stasiun, id_sta in ID_STASIUN.items():
