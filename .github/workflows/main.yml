@@ -56,12 +56,15 @@ jobs:
           git config --global user.email "actions@github.com"
           git add .
           
-          # Hapus paksa folder rebase jika macet
+          # Hapus paksa folder rebase jika macet sebelumnya
           if (Test-Path ".git\rebase-merge") { Remove-Item -Recurse -Force ".git\rebase-merge" }
           
           # Lakukan commit, abaikan error jika tidak ada perubahan
           git commit -m "Update otomatis data satelit dan radar"
           $LASTEXITCODE = 0
           
-          git pull origin main
+          # Tarik data dari GitHub. Jika ada konflik, paksa menangkan file lokal (-X ours)
+          git pull origin main --no-rebase -X ours
+          
+          # Dorong hasil akhirnya ke GitHub
           git push origin main
