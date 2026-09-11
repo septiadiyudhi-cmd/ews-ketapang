@@ -117,11 +117,20 @@ def putar_suara(file_path):
     except Exception:
         pass
 
-@st.cache_data(ttl=60)
+# PERBAIKAN: Menggunakan URL GitHub Raw dengan parameter anti-cache dan TTL 120 detik (2 menit)
+@st.cache_data(ttl=120)
 def muat_log():
-    if not os.path.exists(LOG_CSV):
-        return pd.DataFrame()
-    df = pd.read_csv(LOG_CSV)
+    url_dasar = "https://raw.githubusercontent.com/septiadiyudhi-cmd/ews-ketapang/refs/heads/main/Satelit/log_status_cb.csv"
+    url_anti_cache = f"{url_dasar}?t={int(time.time())}"
+    
+    try:
+        df = pd.read_csv(url_anti_cache)
+    except Exception:
+        # Fallback (cadangan) jika internet/GitHub error, akan membaca file lokal
+        if not os.path.exists(LOG_CSV):
+            return pd.DataFrame()
+        df = pd.read_csv(LOG_CSV)
+        
     if df.empty:
         return df
     
@@ -392,7 +401,7 @@ with tab_utama:
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=df_24jam["waktu_wib_dt"], y=df_24jam["suhu_min_10km"], mode="lines+markers", name="Suhu Min. 10km", line=dict(color="#ff3333")))
         fig.add_trace(go.Scatter(x=df_24jam["waktu_wib_dt"], y=df_24jam["suhu_min_20km"], mode="lines+markers", name="Suhu Min. 20km", line=dict(color="#ffcc00")))
-        fig.add_hline(y=AMBANG_SEL_SIGNIFIKAN_C, line_dash="dash", line_color="#ff9900", annotation_text="Ambang Satelit")
+        fig.add_hline(y=AMAmbANG_SEL_SIGNIFIKAN_C, line_dash="dash", line_color="#ff9900", annotation_text="Ambang Satelit")
         fig.update_layout(template="plotly_dark", height=300, margin=dict(l=10, r=10, t=30, b=10))
         st.plotly_chart(fig, use_container_width=True)
 
