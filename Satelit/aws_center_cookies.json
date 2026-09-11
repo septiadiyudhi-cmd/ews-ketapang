@@ -1,0 +1,50 @@
+[
+  {
+    "domain": ".bmkg.go.id",
+    "httpOnly": true,
+    "name": "cfzs_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_pageviewCounter%22%3A%7B%22v%22%3A%222%22%7D%2C%220bd2_conversionCounter%22%3A%7B%22v%22%3A%222%22%7D%7D"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820677254,
+    "httpOnly": true,
+    "name": "cf_clearance",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "CHg6n8gX3str8vkeAOmMgyExwkTI8WHxh6EoYOm5zyk-1789141254-1.2.1.1-cqZOn_RWCLqptvKi.r0GPYoGFeGqaFkItqX3iIUyrUdaBHcuCJXoyXr9uvb3Ngw0cowAUP7sR4FmYiaIBH3pQTQaInk_.AVPsIpGIbSquoflq7a8F12k6JemRtAxmnvVctI7n7s2kx_nfoTKxZm8r1Fg2KTYpX0.lG6OLAPGl9tHy7Vj8Wk.onxXMwqd7bWIEd.716aCtoo_yy7jIkD2pVMZJseer895P.NLhP0tTgksAUuXbO1xrGXC8DFFmq6sHw9BfA28XBSvW4q527xOxtlo4tBVYukSuDymH6zp2Cl51OJKEDVbnxEgt35DAlSJYvmS.TMuR5ABYghhdIBgZF70FGkpyIhsGMCh4GneAuIrg_b04gsZRJXb.bYNaLv0BP6e1gkNCfGNmKhB7_7IwA"
+  },
+  {
+    "domain": "awscenter.bmkg.go.id",
+    "httpOnly": false,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "t9ffvi1h8oisbs7eob3ll71sun"
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820677274,
+    "httpOnly": true,
+    "name": "cf_zaraz_client",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": ""
+  },
+  {
+    "domain": ".bmkg.go.id",
+    "expiry": 1820677274,
+    "httpOnly": true,
+    "name": "cfz_google-analytics_v4",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "%7B%220bd2_engagementDuration%22%3A%7B%22v%22%3A%220%22%2C%22e%22%3A1820677273882%7D%2C%220bd2_engagementStart%22%3A%7B%22v%22%3A%221789141273882%22%2C%22e%22%3A1820677273882%7D%2C%220bd2_counter%22%3A%7B%22v%22%3A%225%22%2C%22e%22%3A1820677273882%7D%2C%220bd2_ga4sid%22%3A%7B%22v%22%3A%221304024551%22%2C%22e%22%3A1789143073882%7D%2C%220bd2_session_counter%22%3A%7B%22v%22%3A%221%22%2C%22e%22%3A1820677273882%7D%2C%220bd2_ga4%22%3A%7B%22v%22%3A%220720444f-5124-48f1-857a-5dc7851f097d%22%2C%22e%22%3A1820677273882%7D%2C%220bd2__z_ga_audiences%22%3A%7B%22v%22%3A%220720444f-5124-48f1-857a-5dc7851f097d%22%2C%22e%22%3A1820677253725%7D%2C%220bd2_let%22%3A%7B%22v%22%3A%221789141273882%22%2C%22e%22%3A1820677273882%7D%7D"
+  }
+]
