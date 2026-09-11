@@ -401,7 +401,7 @@ with tab_utama:
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=df_24jam["waktu_wib_dt"], y=df_24jam["suhu_min_10km"], mode="lines+markers", name="Suhu Min. 10km", line=dict(color="#ff3333")))
         fig.add_trace(go.Scatter(x=df_24jam["waktu_wib_dt"], y=df_24jam["suhu_min_20km"], mode="lines+markers", name="Suhu Min. 20km", line=dict(color="#ffcc00")))
-        fig.add_hline(y=AMAmbANG_SEL_SIGNIFIKAN_C, line_dash="dash", line_color="#ff9900", annotation_text="Ambang Satelit")
+        fig.add_hline(y=AMBANG_SEL_SIGNIFIKAN_C, line_dash="dash", line_color="#ff9900", annotation_text="Ambang Satelit")
         fig.update_layout(template="plotly_dark", height=300, margin=dict(l=10, r=10, t=30, b=10))
         st.plotly_chart(fig, use_container_width=True)
 
