@@ -35,7 +35,7 @@ def buat_session():
 def unduh_radar():
     print("=== UNDUH GAMBAR RADAR SIDARMA ===")
     session = buat_session()
-    waktu_str = datetime.utcnow(timezone.utc).strftime("%Y%m%d_%H%M")
+    waktu_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M")
     
     for radar in RADAR_LIST:
         print(f"\n[{radar}] Memeriksa API untuk gambar terbaru...")
