@@ -147,7 +147,7 @@ def proses_nowcasting_satelit_npz():
         )
         
         judul_tambahan = "(Aktual)" if step == 0 else "(Prediksi)"
-        ax.set_title(f"Satelit Himawari-9 (Suhu Puncak Awan) {judul_tambahan}\nBerlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
+        ax.set_title(f"{judul_tambahan} Satelit Himawari-9 Berlaku: {teks_waktu}", color="#33cc66", fontweight="bold", pad=15)
         
         # Colorbar presisi di sisi kanan luar peta
         cax_satelit = ax.inset_axes([1.02, 0.1, 0.03, 0.8])
