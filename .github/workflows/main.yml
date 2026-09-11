@@ -2,7 +2,7 @@ name: Auto Update EWS
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/3600 * * * *'
   workflow_dispatch:
 
 jobs:
