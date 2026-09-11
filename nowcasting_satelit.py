@@ -122,12 +122,13 @@ def proses_nowcasting_satelit_npz():
         koordinat_x = [112.0, 112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5, 116.0]
         koordinat_y = [-6.5, -7.0, -7.5, -8.0, -8.5, -9.0, -9.5]
 
-        # Tambahkan Grid putih putus-putus dan paksa letaknya (xlocs & ylocs)
-        ax.gridlines(
+        # KUNCI PERBAIKAN: Gunakan FixedLocator untuk memaksa Cartopy menggambar garis grid
+        gl = ax.gridlines(
             crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, 
-            color="white", alpha=0.65, linestyle="--", zorder=30,
-            xlocs=koordinat_x, ylocs=koordinat_y
+            color="white", alpha=0.65, linestyle="--", zorder=30
         )
+        gl.xlocator = mticker.FixedLocator(koordinat_x)
+        gl.ylocator = mticker.FixedLocator(koordinat_y)
 
         # Label Longitude (Berada di dasar peta: Y = -9.5)
         for lon_tick in koordinat_x[1:-1]: # Lewati ujung agar teks tidak terpotong tepi
