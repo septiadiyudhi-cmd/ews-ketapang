@@ -122,20 +122,18 @@ def proses_nowcasting_satelit_npz():
         koordinat_x = [112.0, 112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5, 116.0]
         koordinat_y = [-6.5, -7.0, -7.5, -8.0, -8.5, -9.0, -9.5]
 
-        # KUNCI PERBAIKAN: Gunakan FixedLocator untuk memaksa Cartopy menggambar garis grid
-        gl = ax.gridlines(
-            crs=ccrs.PlateCarree(), draw_labels=False, linewidth=1.0, 
-            color="white", alpha=0.65, linestyle="--", zorder=30
-        )
-        gl.xlocator = mticker.FixedLocator(koordinat_x)
-        gl.ylocator = mticker.FixedLocator(koordinat_y)
+        # KUNCI PERBAIKAN: Gambar garis secara manual mengabaikan bug Cartopy
+        for x in koordinat_x:
+            ax.plot([x, x], [-9.5, -6.5], color="white", linestyle="--", linewidth=1.0, alpha=0.5, transform=ccrs.PlateCarree(), zorder=30)
+        for y in koordinat_y:
+            ax.plot([112.0, 116.0], [y, y], color="white", linestyle="--", linewidth=1.0, alpha=0.5, transform=ccrs.PlateCarree(), zorder=30)
 
         # Label Longitude (Berada di dasar peta: Y = -9.5)
-        for lon_tick in koordinat_x[1:-1]: # Lewati ujung agar teks tidak terpotong tepi
+        for lon_tick in koordinat_x[1:-1]:
             ax.text(lon_tick, -9.5 + 0.03, f"{lon_tick:.1f}\u00b0E", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="center", va="bottom", zorder=35)
             
         # Label Latitude (Berada di sisi kiri peta: X = 112.0)
-        for lat_tick in koordinat_y[1:-1]: # Lewati ujung agar teks tidak terpotong tepi
+        for lat_tick in koordinat_y[1:-1]:
             ax.text(112.0 + 0.03, lat_tick, f"{abs(lat_tick):.1f}\u00b0S", transform=ccrs.PlateCarree(), color="#ff5555", fontsize=10, ha="left", va="center", rotation=90, zorder=35)
         
         # Gambar prediksi dengan contourf agar batas suhunya melengkung mulus
