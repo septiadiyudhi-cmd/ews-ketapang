@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Tarik kode dari repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          clean: true
 
       - name: Install Dependencies
         run: C:/Users/anaconda/python.exe -m pip install beautifulsoup4
@@ -23,8 +26,8 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           RADAR_API_URL: ${{ secrets.RADAR_API_URL }}
           RADAR_REFERER: ${{ secrets.RADAR_REFERER }}
-          AWS_GILIMANUK_URL: ${{ secrets.AWS_GILIMANUK_URL }}
-          AWS_KETAPANG_URL: ${{ secrets.AWS_KETAPANG_URL }}
+          #AWS_GILIMANUK_URL: ${{ secrets.AWS_GILIMANUK_URL }}
+          #AWS_KETAPANG_URL: ${{ secrets.AWS_KETAPANG_URL }}
           AWS_RAW_DATA_URL: ${{ secrets.AWS_RAW_DATA_URL }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
