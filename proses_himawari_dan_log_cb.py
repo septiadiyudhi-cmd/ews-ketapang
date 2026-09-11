@@ -77,20 +77,34 @@ def kirim_notif_telegram(status, waktu, jumlah_sel, suhu):
         print("[Telegram] Kredensial tidak ditemukan. Notifikasi dilewati.")
         return
         
+    # 1. Ubah format waktu ke Bahasa Indonesia
+    try:
+        w_dt = datetime.strptime(waktu, "%Y-%m-%d %H:%M")
+        bln = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+        waktu_teks = f"{w_dt.day} {bln[w_dt.month]} {w_dt.year} pukul {w_dt.strftime('%H:%M')}"
+    except Exception:
+        # Jika format waktu dari CSV berantakan, gunakan aslinya
+        waktu_teks = waktu 
+
+    # 2. Ganti URL ini dengan alamat web Streamlit milikmu yang asli
+    url_dashboard = "https://ews-ketapang-gilimanuk.streamlit.app/" 
+
     pesan = (
         f"🚨 *PERINGATAN EWS*\n\n"
         f"📍 *Lokasi:* Penyeberangan Ketapang - Gilimanuk\n"
         f"⚠️ *Status:* {status}\n"
-        f"🕒 *Waktu:* {waktu} WIB\n\n"
-        f"Terdeteksi {jumlah_sel} sel awan aktif dengan suhu {suhu}°C.\n"
-        f"Segera cek dashboard!"
+        f"🕒 *Waktu:* {waktu_teks} WIB\n\n"
+        f"Terdeteksi {jumlah_sel} sel awan aktif dengan suhu {suhu}°C.\n\n"
+        f"Segera cek pantauan satelit dan radar di dashboard:\n"
+        f"🌐 {url_dashboard}"
     )
     
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
         "chat_id": chat_id,
         "text": pesan,
-        "parse_mode": "Markdown"
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": False # Ubah ke True jika tidak ingin ada kotak preview web di chat
     }
     
     try:
