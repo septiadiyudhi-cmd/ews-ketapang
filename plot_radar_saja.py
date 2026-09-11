@@ -17,7 +17,7 @@ import cartopy.feature as cfeature
 import cartopy.io.img_tiles as cimgt
 
 INFO_RADAR = {
-    "SURABAYA": {"lat": -7.160, "lon": 112.700},
+    "SURABAYA": {"lat": -7.400, "lon": 112.700},
     "DENPASAR": {"lat": -8.748, "lon": 115.187},
 }
 RADIUS_RADAR_KM = 250.0
