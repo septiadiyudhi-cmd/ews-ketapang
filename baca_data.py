@@ -56,7 +56,7 @@ POLA_TIMESTAMP = re.compile(r"(\d{12})\.nc$", re.IGNORECASE)
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 # =============================================================
-# FUNGSI SATELIT (Diringkas, sama seperti sebelumnya)
+# FUNGSI SATELIT
 # =============================================================
 def ambil_timestamp(nama_file):
     match = POLA_TIMESTAMP.search(nama_file)
@@ -176,6 +176,37 @@ def simpan_log_status(baris_baru: dict):
     print(f"Log status disimpan: {LOG_CSV} ({len(df_gabung)} baris)")
 
 # =============================================================
+# LOGIKA PENGGABUNGAN SEL (MENCEGAH DOUBLE COUNTING)
+# =============================================================
+def gabung_sel_berdekatan(daftar_sel, toleransi_jarak_km=15.0):
+    """Melebur sel satelit dan radar yang mendeteksi awan yang sama."""
+    if not daftar_sel: return []
+    
+    sel_unik = []
+    for sel in daftar_sel:
+        digabung = False
+        for unik in sel_unik:
+            # Cek jarak antar titik tengah (centroid) sel
+            jarak = hitung_jarak_antar_titik_km(
+                sel["centroid_lat"], sel["centroid_lon"], 
+                unik["centroid_lat"], unik["centroid_lon"]
+            )
+            
+            if jarak <= toleransi_jarak_km:
+                # Lebur menjadi satu sel: ambil luas terbesar & jarak terdekat ke pelabuhan
+                unik["luas_km2"] = max(unik["luas_km2"], sel["luas_km2"])
+                unik["jarak_km"] = min(unik["jarak_km"], sel["jarak_km"])
+                if sel["sumber"] not in unik["sumber"]:
+                    unik["sumber"] = unik["sumber"] + "+" + sel["sumber"]
+                digabung = True
+                break
+                
+        if not digabung:
+            sel_unik.append(sel.copy())
+            
+    return sel_unik
+
+# =============================================================
 # PROSES UTAMA
 # =============================================================
 def baca_dan_simpan(nc_file):
@@ -212,20 +243,21 @@ def baca_dan_simpan(nc_file):
         except Exception as e:
             print(f"[GAGAL] Error membaca radar: {e}")
 
-    # GABUNGKAN KEDUA DAFTAR SEL
-    daftar_sel_gabungan = sel_satelit + sel_radar
-    status = tentukan_status_dari_sel(daftar_sel_gabungan)
-    
-    # Ambil nilai max dBZ dari radar untuk di log
+    # GABUNGKAN KEDUA DAFTAR SEL (Tanpa duplikasi)
     dbz_maks_radar = max([s["dbz_maks"] for s in sel_radar]) if sel_radar else None
-
-    jumlah_sel_signifikan = len(daftar_sel_gabungan)
+    
+    daftar_sel_mentah = sel_satelit + sel_radar
+    daftar_sel_unik = gabung_sel_berdekatan(daftar_sel_mentah, toleransi_jarak_km=15.0)
+    
+    status = tentukan_status_dari_sel(daftar_sel_unik)
+    jumlah_sel_signifikan = len(daftar_sel_unik)
+    
     luas_terbesar_km2, jarak_terdekat_km = None, None
-    if daftar_sel_gabungan:
-        luas_terbesar_km2 = max(daftar_sel_gabungan, key=lambda s: s["luas_km2"])["luas_km2"]
-        jarak_terdekat_km = min(daftar_sel_gabungan, key=lambda s: s["jarak_km"])["jarak_km"]
+    if daftar_sel_unik:
+        luas_terbesar_km2 = max(daftar_sel_unik, key=lambda s: s["luas_km2"])["luas_km2"]
+        jarak_terdekat_km = min(daftar_sel_unik, key=lambda s: s["jarak_km"])["jarak_km"]
 
-    heading, speed, c_lat, c_lon = lacak_pergerakan_sel(waktu_dt, daftar_sel_gabungan)
+    heading, speed, c_lat, c_lon = lacak_pergerakan_sel(waktu_dt, daftar_sel_unik)
 
     print(f"Status: {status} | Sel Gabungan: {jumlah_sel_signifikan} | dBZ Maks: {dbz_maks_radar}")
 
