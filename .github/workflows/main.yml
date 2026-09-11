@@ -9,6 +9,14 @@ jobs:
   update-data:
     runs-on: self-hosted
     steps:
+    # Lakukan pembersihan RAM dan proses secara paksa dari jarak jauh
+      - name: Basmi Proses Menggantung (Remote Task Manager)
+        run: |
+          Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
+          Stop-Process -Name "chrome" -Force -ErrorAction SilentlyContinue
+          Stop-Process -Name "git" -Force -ErrorAction SilentlyContinue
+        shell: powershell
+        
       - name: Tarik kode dari repository
         uses: actions/checkout@v4
         with:
