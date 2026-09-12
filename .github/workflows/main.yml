@@ -2,19 +2,28 @@ name: Auto Update EWS
 
 on:
   schedule:
-    - cron: '*/3600 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
   update-data:
     runs-on: self-hosted
     steps:
-    # Lakukan pembersihan RAM dan proses secara paksa dari jarak jauh
+      # Lakukan pembersihan RAM dan proses secara paksa dari jarak jauh
       - name: Basmi Proses Menggantung (Remote Task Manager)
         run: |
           Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
           Stop-Process -Name "chrome" -Force -ErrorAction SilentlyContinue
           Stop-Process -Name "git" -Force -ErrorAction SilentlyContinue
+        shell: powershell
+        
+      # Perbesar buffer internet agar tidak putus saat download file besar
+      - name: Perbesar Buffer Jaringan Git
+        run: |
+          git config --global http.postBuffer 1048576000
+          git config --global core.compression 0
+          git config --global http.lowSpeedLimit 1000
+          git config --global http.lowSpeedTime 60
         shell: powershell
         
       - name: Tarik kode dari repository
