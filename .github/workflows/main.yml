@@ -25,6 +25,7 @@ jobs:
           git config --global http.lowSpeedLimit 0
           git config --global http.lowSpeedTime 999999
           git config --global core.compression 0
+          git config --global http.version HTTP/1.1
         shell: powershell
         
       - name: Tarik kode dari repository
