@@ -28,11 +28,11 @@ jobs:
           git config --global http.version HTTP/1.1
         shell: powershell
         
-      - name: Tarik kode dari repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          clean: false
+      - name: Tarik kode dari repository (Manual Pull)
+        run: |
+          git config --global --add safe.directory C:\actions-runner\_work\ews-ketapang\ews-ketapang
+          git pull origin main --no-rebase
+        shell: powershell
 
       - name: Install Dependencies
         run: C:/Users/anaconda/python.exe -m pip install beautifulsoup4
