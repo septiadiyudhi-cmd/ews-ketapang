@@ -33,6 +33,7 @@ jobs:
         with:
           fetch-depth: 1
           clean: true
+          filter: blob:none   # <--- INI MANTRA BARUNYA
 
       - name: Install Dependencies
         run: C:/Users/anaconda/python.exe -m pip install beautifulsoup4
