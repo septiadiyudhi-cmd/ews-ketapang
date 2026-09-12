@@ -17,13 +17,14 @@ jobs:
           Stop-Process -Name "git" -Force -ErrorAction SilentlyContinue
         shell: powershell
         
-      # Perbesar buffer internet agar tidak putus saat download file besar
-      - name: Perbesar Buffer Jaringan Git
+      # Optimasi tingkat lanjut untuk internet tidak stabil dan file besar
+      - name: Optimasi Jaringan Git (Anti Putus)
         run: |
           git config --global http.postBuffer 1048576000
+          git config --global http.sslBackend openssl
+          git config --global http.lowSpeedLimit 0
+          git config --global http.lowSpeedTime 999999
           git config --global core.compression 0
-          git config --global http.lowSpeedLimit 1000
-          git config --global http.lowSpeedTime 60
         shell: powershell
         
       - name: Tarik kode dari repository
@@ -43,8 +44,6 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           RADAR_API_URL: ${{ secrets.RADAR_API_URL }}
           RADAR_REFERER: ${{ secrets.RADAR_REFERER }}
-          #AWS_GILIMANUK_URL: ${{ secrets.AWS_GILIMANUK_URL }}
-          #AWS_KETAPANG_URL: ${{ secrets.AWS_KETAPANG_URL }}
           AWS_RAW_DATA_URL: ${{ secrets.AWS_RAW_DATA_URL }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
