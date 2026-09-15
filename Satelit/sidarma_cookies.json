@@ -1,0 +1,11 @@
+[
+  {
+    "domain": "172.19.1.163",
+    "httpOnly": true,
+    "name": "PHPSESSID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "1bccf28c44ab11b656176f62500f84fc"
+  }
+]
