@@ -8,6 +8,11 @@ on:
 jobs:
   update-data:
     runs-on: self-hosted
+    # Menjamin SEMUA perintah (termasuk Python) tereksekusi di dalam folder yang benar
+    defaults:
+      run:
+        working-directory: C:\actions-runner\_work\ews-ketapang\ews-ketapang
+
     steps:
       # Lakukan pembersihan RAM dan proses secara paksa dari jarak jauh
       - name: Basmi Proses Menggantung (Remote Task Manager)
@@ -27,11 +32,19 @@ jobs:
           git config --global core.compression 0
           git config --global http.version HTTP/1.1
         shell: powershell
-        
-      - name: Tarik kode dari repository (Manual Pull)
+
+      - name: Siapkan Repositori (Tanpa Git Pull)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          $env:GIT_TERMINAL_PROMPT="0"
+          $env:GCM_INTERACTIVE="false"
           git config --global --add safe.directory C:\actions-runner\_work\ews-ketapang\ews-ketapang
-          git pull origin main --no-rebase
+          git remote set-url origin https://x-access-token:$env:GITHUB_TOKEN@github.com/septiadiyudhi-cmd/ews-ketapang.git
+          
+          # KITA MATIKAN SEMENTARA git pull karena data sudah utuh dari unduhan HP
+          # git config pull.rebase false
+          # git pull origin main --no-edit
         shell: powershell
 
       - name: Install Dependencies
@@ -60,7 +73,13 @@ jobs:
         run: C:/Users/anaconda/python.exe -u nowcasting_satelit.py
 
       - name: Simpan Data Baru ke GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Matikan semua pop-up login tersembunyi
+          $env:GIT_TERMINAL_PROMPT="0"
+          $env:GCM_INTERACTIVE="false"
+          
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add .
@@ -72,8 +91,9 @@ jobs:
           git commit -m "Update otomatis data satelit dan radar"
           $LASTEXITCODE = 0
           
-          # Tarik data dari GitHub. Jika ada konflik, paksa menangkan file lokal (-X ours)
-          git pull origin main --no-rebase -X ours
+          # Tarik pembaruan YAML dari GitHub agar tidak ditolak saat push
+          git pull https://x-access-token:$env:GITHUB_TOKEN@github.com/septiadiyudhi-cmd/ews-ketapang.git main --no-rebase --no-edit
           
-          # Dorong hasil akhirnya ke GitHub
-          git push origin main
+          # Dorong hasil akhirnya ke GitHub pakai token VIP
+          git push https://x-access-token:$env:GITHUB_TOKEN@github.com/septiadiyudhi-cmd/ews-ketapang.git main
+        shell: powershell
