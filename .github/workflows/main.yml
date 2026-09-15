@@ -31,7 +31,9 @@ jobs:
       - name: Tarik kode dari repository (Manual Pull)
         run: |
           git config --global --add safe.directory C:\actions-runner\_work\ews-ketapang\ews-ketapang
-          git pull origin main --no-rebase
+          git config pull.rebase false
+          # Paksa menggunakan opsi default agar tidak macet di layar konfirmasi
+          git pull origin main --no-edit
         shell: powershell
 
       - name: Install Dependencies
