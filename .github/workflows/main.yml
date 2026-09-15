@@ -2,7 +2,8 @@ name: Auto Update EWS
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Berjalan setiap jam 06:00 WIB (23 UTC) dan 18:00 WIB (11 UTC)
+    - cron: '0 11,23 * * *'
   workflow_dispatch:
 
 jobs:
