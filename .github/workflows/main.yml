@@ -18,7 +18,8 @@ jobs:
       - name: Basmi Proses Menggantung (Remote Task Manager)
         run: |
           Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
-          Stop-Process -Name "chrome" -Force -ErrorAction SilentlyContinue
+          # Matikan sapu jagat Chrome agar tidak mengganggu browser yang sedang dipakai
+          # Stop-Process -Name "chrome" -Force -ErrorAction SilentlyContinue
           Stop-Process -Name "git" -Force -ErrorAction SilentlyContinue
         shell: powershell
         
