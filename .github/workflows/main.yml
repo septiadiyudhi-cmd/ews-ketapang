@@ -29,10 +29,12 @@ jobs:
         shell: powershell
         
       - name: Tarik kode dari repository (Manual Pull)
+        working-directory: C:\actions-runner\_work\ews-ketapang\ews-ketapang
         run: |
+          $env:GIT_TERMINAL_PROMPT="0"
+          $env:GIT_ASKPASS="true"
           git config --global --add safe.directory C:\actions-runner\_work\ews-ketapang\ews-ketapang
           git config pull.rebase false
-          # Paksa menggunakan opsi default agar tidak macet di layar konfirmasi
           git pull origin main --no-edit
         shell: powershell
 
