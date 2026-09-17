@@ -246,10 +246,11 @@ def auto_ftp_download():
         print(f"\nMengunduh {nama_file} menggunakan cURL...")
         
         url_ftp = f"ftp://{FTP_HOST}{remote_dir}/{nama_file}"
+        print(f"URL Unduhan: {url_ftp}") # PERBAIKAN: Cetak URL untuk di-copy ke browser
         
         try:
             subprocess.run([
-                "curl", "-u", f"{FTP_USER}:{FTP_PASS}",
+                "curl", "-fS", "-L", "-u", f"{FTP_USER}:{FTP_PASS}", # PERBAIKAN: Tambah -fS dan -L
                 "--ftp-pasv",
                 "--connect-timeout", "30",
                 "--max-time", "900",
